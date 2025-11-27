@@ -8,7 +8,7 @@ from pathlib import Path
 import torch
 import platform
 import psutil
-from training_registry import get_registry, TrainingRun
+from .training_registry import get_registry, TrainingRun
 
 def add_previous_run():
     """Add the previously completed training run to the registry"""

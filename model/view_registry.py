@@ -5,7 +5,7 @@ View Training Registry - Display all logged training runs
 
 import sys
 from pathlib import Path
-from training_registry import get_registry
+from .training_registry import get_registry
 
 def main():
     """Main function to display training registry"""

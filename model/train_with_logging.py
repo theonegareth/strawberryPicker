@@ -13,7 +13,7 @@ from datetime import datetime
 import torch
 import yaml
 from typing import Dict, Any
-from training_registry import log_training_run, get_registry
+from .training_registry import log_training_run, get_registry
 
 def setup_logging(results_dir: Path, experiment_name: str, enable_wandb: bool = False):
     """Setup comprehensive logging for training"""
