@@ -7,7 +7,9 @@ import cv2
 from ultralytics import YOLO
 import argparse
 from pathlib import Path
-from .training_registry import get_registry
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from training_registry import get_registry
 
 def test_model(model_path, image_path, save_output=True):
     """Test the trained model on a single image"""
