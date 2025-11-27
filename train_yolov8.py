@@ -34,7 +34,7 @@ def setup_paths(dataset_path=None):
     else:
         # Local/WSL paths
         base_path = Path(__file__).parent
-        dataset_path = dataset_path or base_path / 'model' / 'dataset' / 'straw-detect.v1-straw-detect.yolov8'
+        dataset_path = dataset_path or base_path / 'model' / 'dataset'
         weights_dir = base_path / 'model' / 'weights'
         results_dir = base_path / 'model' / 'results'
     
