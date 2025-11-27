@@ -10,6 +10,8 @@ import argparse
 from pathlib import Path
 import torch
 import yaml
+import time
+from model.validation_logger import validation_logger, ValidationResult, create_validation_result_from_metrics
 
 def check_environment():
     """Detect running environment and configure paths accordingly"""
@@ -132,7 +134,13 @@ def train_model(data_yaml, weights_dir, results_dir, epochs=100, img_size=640, b
     print("TRAINING STARTED")
     print(f"{'='*60}\n")
     
+    # Record training start time
+    training_start_time = time.time()
+    
     results = model.train(**train_args)
+    
+    # Calculate training duration
+    training_duration = (time.time() - training_start_time) / 60  # minutes
     
     # Save final model
     final_model_path = weights_dir / 'strawberry_yolov8n.pt'
@@ -142,7 +150,49 @@ def train_model(data_yaml, weights_dir, results_dir, epochs=100, img_size=640, b
     print(f"Training completed!")
     print(f"Final model saved to: {final_model_path}")
     print(f"Results saved to: {results_dir / 'strawberry_detection'}")
+    print(f"Training duration: {training_duration:.1f} minutes")
     print(f"{'='*60}\n")
+    
+    # Log training run
+    try:
+        from training_registry import TrainingRun, TrainingRegistry
+        from datetime import datetime
+        
+        training_registry = TrainingRegistry("model/training_registry.json")
+        
+        # Extract metrics from results
+        final_metrics = {}
+        if hasattr(results, 'results_dict'):
+            final_metrics = results.results_dict
+        
+        training_run = TrainingRun(
+            run_id=f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            model_name='yolov8n',
+            model_path=str(final_model_path),
+            dataset_path=str(data_yaml),
+            epochs=epochs,
+            batch_size=batch_size,
+            img_size=img_size,
+            learning_rate=0.01,  # Default for YOLOv8
+            optimizer='AdamW',
+            loss=final_metrics.get('train/loss', 0.0),
+            accuracy=final_metrics.get('metrics/mAP50(B)', 0.0),
+            val_loss=final_metrics.get('val/loss', 0.0),
+            val_accuracy=final_metrics.get('metrics/mAP50(B)', 0.0),
+            training_duration=training_duration,
+            hardware_info={
+                'gpu': env['gpu_name'],
+                'gpu_memory': f"{torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB" if env['has_gpu'] else "N/A"
+            } if env['has_gpu'] else {'gpu': 'CPU'},
+            config=train_args,
+            created_at=datetime.now().isoformat()
+        )
+        
+        training_registry.log_training_run(training_run)
+        print(f"✓ Training run logged: {training_run.run_id}")
+        
+    except Exception as e:
+        print(f"Warning: Could not log training run: {e}")
     
     return results, final_model_path
 
