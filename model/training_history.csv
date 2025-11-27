@@ -1,0 +1,2 @@
+run_id,date,experiment_name,dataset_name,dataset_size,model_architecture,model_size,batch_size,image_size,epochs_planned,epochs_completed,learning_rate,optimizer,val_precision,val_recall,val_map50,val_map50_95,training_time_minutes,gpu_name,status,best_epoch
+run_20251125_150400_manual_baseline,2025-11-25 15:04:00,Baseline_YOLOv8n,straw-detect.v1-straw-detect.yolov8,392,YOLOv8,n,8,416,50,50,0.002,AdamW,0.916,0.855,0.937,0.581,4.3,NVIDIA GeForce RTX 3050 Ti Laptop GPU,completed,50
