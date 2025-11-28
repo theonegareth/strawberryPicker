@@ -39,10 +39,27 @@ model/exports/
 
 # Dataset (large files)
 model/dataset/
+model/dataset_*/
+model/ripeness_*/
+model/ripeness-classification-dataset/
+model/ripeness_classification_dataset/
+model/ripeness_manual_dataset/
+model/ripeness_detection_dataset/
 *.zip
 *.tar.gz
 *.tar
 data/
+*.cache
+
+# Generated datasets (can be regenerated)
+model/dataset/**/*.jpg
+model/dataset/**/*.jpeg
+model/dataset/**/*.png
+model/dataset/**/*.bmp
+model/dataset/**/*.zip
+model/dataset/**/labels.cache
+!model/dataset/**/data.yaml
+!model/dataset/**/*.txt
 
 # IDE
 .vscode/
