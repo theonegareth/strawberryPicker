@@ -119,6 +119,17 @@ model/dataset/**/*.zip
 !model/dataset/**/data.yaml
 !model/dataset/**/*.txt
 
+# Keep training scripts but ignore generated files
+model/**/*.log
+model/**/*.csv
+model/**/*.json
+model/**/weights/
+model/**/results/
+model/**/exports/
+!model/training/**/*.py
+!model/deployment/**/*.py
+!model/validation/**/*.py
+
 # Training artifacts
 *.weights
 *.cfg
