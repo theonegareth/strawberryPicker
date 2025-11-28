@@ -1,0 +1,283 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch
+*.pth
+*.pt
+*.pkl
+
+# Model files
+*.h5
+*.tflite
+*.onnx
+*.pb
+model/weights/
+model/results/
+model/exports/
+
+# Dataset (large files)
+model/dataset/
+*.zip
+*.tar.gz
+*.tar
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# TensorBoard
+runs/
+*.tfevents.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Training checkpoints
+*.pth.tar
+checkpoint/
+checkpoints/
+
+# Roboflow exports (can be regenerated)
+straw-detect.v1-straw-detect.yolov8/
+
+# Project specific
+# Keep dataset structure but ignore large files
+model/dataset/**/*.jpg
+model/dataset/**/*.jpeg
+model/dataset/**/*.png
+model/dataset/**/*.zip
+!model/dataset/**/data.yaml
+!model/dataset/**/*.txt
+
+# Training artifacts
+*.weights
+*.cfg
+*.data
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.pb
+*.h5
+*.pkl
+*.pth.tar
+
+# Output directories
+model/weights/
+model/results/
+model/exports/
+runs/
+detect/
+predict/
+val/
+
+# Logs and caches
+*.log
+logs/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.cache/
+.parquet
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+
+# Build artifacts
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pyproject.toml
+poetry.lock
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Weights & Biases
+wandb/
+
+# TensorBoard
+runs/
+*.tfevents.*
+events.out.tfevents.*
+
+# PyTorch
+*.pt
+*.pth
+*.pkl
+
+# OpenCV
+*.avi
+*.mp4
+*.mov
+*.mkv
+
+# Calibration files
+*.calib
+*.yaml
+*.yml
+!data.yaml
+!requirements.txt
+!setup.py
+!pyproject.toml
+
+# Arduino build files
+ArduinoCode/*.hex
+ArduinoCode/*.elf
+ArduinoCode/build/
+ArduinoCode/*.bin
+
+# SolidWorks temporary files
+assets/solidworks/*.tmp
+assets/solidworks/~$*
+assets/solidworks/*.bak
+assets/solidworks/*.swp
+
+# STL processing files
+assets/stl/*.tmp
+*.gcode
+*.factory
+
+# Documentation builds
+docs/_build/
+site/
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.pptx
+
+# Local configuration
+config.local.yaml
+secrets.yaml
+credentials.json
+*.key
+*.pem
+
+# Debug files
+debug/
+debug_images/
+*.debug
+
+# Robot specific
+robot/logs/
+robot/calibration/
+robot/trajectories/
+*.bag

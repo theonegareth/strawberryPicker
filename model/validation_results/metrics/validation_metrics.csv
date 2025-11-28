@@ -1,0 +1,9 @@
+Metric,Value
+total_images,58
+total_detections,328
+avg_confidence,0.7129571087113241
+std_confidence,0.1489182512438488
+high_confidence_ratio,0.9024390243902439
+avg_detections_per_image,5.655172413793103
+images_with_detections,58
+images_without_detections,0
