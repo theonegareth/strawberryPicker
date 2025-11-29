@@ -1,48 +1,36 @@
 #!/usr/bin/env python3
 """
-Train a lightweight ripeness classifier
-Detects: unripe, ripe, overripe
+Train Ripeness Classifier using the converted dataset
+Lightweight CNN for strawberry ripeness classification
 """
 
+import os
+import sys
+from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms, models
-from pathlib import Path
 from PIL import Image
 from tqdm import tqdm
-import json
-from collections import Counter
+import matplotlib.pyplot as plt
+import numpy as np
 
-class RipenessDataset(Dataset):
-    """Dataset for ripeness classification"""
-    def __init__(self, data_dir, transform=None, split='train'):
+class StrawberryRipenessDataset(Dataset):
+    """Dataset for strawberry ripeness classification"""
+    def __init__(self, data_dir, transform=None, split="train"):
         self.data_dir = Path(data_dir) / split
         self.transform = transform
-        self.classes = ['unripe', 'ripe', 'overripe']
+        self.classes = ["unripe", "ripe"]
         self.class_to_idx = {cls: idx for idx, cls in enumerate(self.classes)}
         
         self.samples = []
         for class_name in self.classes:
             class_dir = self.data_dir / class_name
-            if not class_dir.exists():
-                print(f"Warning: {class_dir} does not exist")
-                continue
-            
-            for img_path in class_dir.glob("*.jpg"):
-                self.samples.append((str(img_path), self.class_to_idx[class_name]))
-        
-        print(f"Loaded {len(self.samples)} images for {split}")
-        print(f"Class distribution: {self.get_class_distribution()}")
-    
-    def get_class_distribution(self):
-        """Get class distribution"""
-        if not self.samples:
-            return {}
-        labels = [sample[1] for sample in self.samples]
-        counter = Counter(labels)
-        return {self.classes[idx]: count for idx, count in counter.items()}
+            if class_dir.exists():
+                for img_path in class_dir.glob("*.jpg"):
+                    self.samples.append((img_path, self.class_to_idx[class_name]))
     
     def __len__(self):
         return len(self.samples)
@@ -56,253 +44,232 @@ class RipenessDataset(Dataset):
         
         return image, label
 
-class RipenessClassifier(nn.Module):
-    """Lightweight ripeness classifier"""
-    def __init__(self, num_classes=3, pretrained=True):
+class LightweightRipenessClassifier(nn.Module):
+    """Lightweight CNN for ripeness classification"""
+    def __init__(self, num_classes=2):
         super().__init__()
-        # Use MobileNetV3 for efficiency
-        self.backbone = models.mobilenet_v3_small(pretrained=pretrained)
-        in_features = self.backbone.classifier[0].in_features
-        self.backbone.classifier = nn.Sequential(
-            nn.Linear(in_features, 128),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(128, num_classes)
-        )
+        
+        # Use MobileNetV2 as backbone (lightweight and fast)
+        self.backbone = models.mobilenet_v2(pretrained=True)
+        
+        # Modify for 2 classes (unripe, ripe)
+        in_features = self.backbone.classifier[1].in_features
+        self.backbone.classifier[1] = nn.Linear(in_features, num_classes)
     
     def forward(self, x):
         return self.backbone(x)
 
-def train_epoch(model, dataloader, criterion, optimizer, device):
-    """Train for one epoch"""
-    model.train()
-    running_loss = 0.0
-    correct = 0
-    total = 0
+def train_model(data_dir, epochs=30, batch_size=32, learning_rate=0.001):
+    """Train the ripeness classifier"""
     
-    pbar = tqdm(dataloader, desc="Training")
-    for images, labels in pbar:
-        images, labels = images.to(device), labels.to(device)
-        
-        optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-        
-        running_loss += loss.item()
-        _, predicted = outputs.max(1)
-        total += labels.size(0)
-        correct += predicted.eq(labels).sum().item()
-        
-        pbar.set_postfix({
-            'Loss': f'{running_loss/total:.4f}',
-            'Acc': f'{100.*correct/total:.2f}%'
-        })
-    
-    return running_loss/len(dataloader), 100.*correct/total
-
-def evaluate(model, dataloader, criterion, device):
-    """Evaluate model"""
-    model.eval()
-    running_loss = 0.0
-    correct = 0
-    total = 0
-    
-    class_correct = [0] * 3
-    class_total = [0] * 3
-    
-    with torch.no_grad():
-        pbar = tqdm(dataloader, desc="Evaluating")
-        for images, labels in pbar:
-            images, labels = images.to(device), labels.to(device)
-            
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            
-            running_loss += loss.item()
-            _, predicted = outputs.max(1)
-            total += labels.size(0)
-            correct += predicted.eq(labels).sum().item()
-            
-            # Per-class accuracy
-            for i in range(len(labels)):
-                label = labels[i].item()
-                class_total[label] += 1
-                if predicted[i].item() == label:
-                    class_correct[label] += 1
-            
-            pbar.set_postfix({
-                'Loss': f'{running_loss/total:.4f}',
-                'Acc': f'{100.*correct/total:.2f}%'
-            })
-    
-    # Per-class accuracy
-    class_acc = [100.*c/t if t > 0 else 0 for c, t in zip(class_correct, class_total)]
-    
-    return running_loss/len(dataloader), 100.*correct/total, class_acc
-
-def main():
-    # Configuration
-    DATA_DIR = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/ripeness_manual_dataset"
-    MODEL_SAVE_PATH = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/weights/ripeness_classifier.pt"
-    RESULTS_DIR = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/results/ripeness_classification"
-    
-    # Hyperparameters
-    BATCH_SIZE = 32
-    EPOCHS = 50
-    LEARNING_RATE = 0.001
-    IMAGE_SIZE = 128
-    
-    # Device
+    # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
-    # Create results directory
-    Path(RESULTS_DIR).mkdir(parents=True, exist_ok=True)
-    
     # Data transforms
     train_transform = transforms.Compose([
-        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+        transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(15),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+        transforms.RandomRotation(10),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                           std=[0.229, 0.224, 0.225])
     ])
     
     val_transform = transforms.Compose([
-        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                           std=[0.229, 0.224, 0.225])
     ])
     
-    # Check if dataset exists
-    if not Path(DATA_DIR).exists():
-        print(f"Error: Dataset not found at {DATA_DIR}")
-        print("Please run: python3 create_manual_ripeness_dataset.py")
-        print("Then manually label the crops before training.")
-        return
+    # Datasets
+    train_dataset = StrawberryRipenessDataset(data_dir, train_transform, "train")
+    val_dataset = StrawberryRipenessDataset(data_dir, val_transform, "valid")
     
-    # Check if labeled data exists
-    train_dir = Path(DATA_DIR) / 'train'
-    if not train_dir.exists():
-        print(f"Error: No training data found at {train_dir}")
-        print("Please manually label the crops first!")
-        print("See the LABELING_GUIDE.md in the dataset directory.")
-        return
+    print(f"Training samples: {len(train_dataset)}")
+    print(f"Validation samples: {len(val_dataset)}")
     
-    # Check class distribution
-    classes = ['unripe', 'ripe', 'overripe']
-    print("\nChecking dataset structure...")
-    for split in ['train', 'valid', 'test']:
-        split_dir = Path(DATA_DIR) / split
-        if split_dir.exists():
-            print(f"\n{split}:")
-            for cls in classes:
-                cls_dir = split_dir / cls
-                if cls_dir.exists():
-                    count = len(list(cls_dir.glob("*.jpg")))
-                    print(f"  {cls}: {count} images")
-                else:
-                    print(f"  {cls}: 0 images (directory missing)")
+    # Data loaders
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, 
+                            shuffle=True, num_workers=2)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, 
+                          shuffle=False, num_workers=2)
     
-    # Create datasets
-    print("\nLoading datasets...")
-    train_dataset = RipenessDataset(DATA_DIR, transform=train_transform, split='train')
-    val_dataset = RipenessDataset(DATA_DIR, transform=val_transform, split='valid')
-    test_dataset = RipenessDataset(DATA_DIR, transform=val_transform, split='test')
-    
-    if len(train_dataset) == 0:
-        print("Error: No training images found!")
-        print("Please manually label the crops first.")
-        return
-    
-    # Create dataloaders
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
-    
-    # Create model
-    print("\nCreating model...")
-    model = RipenessClassifier(num_classes=3, pretrained=True)
-    model = model.to(device)
+    # Model
+    model = LightweightRipenessClassifier(num_classes=2).to(device)
     
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=0.01)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
+    optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', 
+                                                   patience=3, factor=0.5)
     
-    # Training loop
-    print(f"\nStarting training for {EPOCHS} epochs...")
-    best_acc = 0.0
-    train_losses, train_accs = [], []
-    val_losses, val_accs = [], []
+    # Training history
+    history = {'train_loss': [], 'val_loss': [], 'train_acc': [], 'val_acc': []}
+    best_val_acc = 0
     
-    for epoch in range(EPOCHS):
-        print(f"\nEpoch {epoch+1}/{EPOCHS}")
+    # Results directory
+    results_dir = Path("/home/user/machine-learning/GitHubRepos/strawberryPicker/model/results/ripeness_classification")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"\n{'='*60}")
+    print("TRAINING STARTED")
+    print(f"{'='*60}")
+    
+    for epoch in range(epochs):
+        # Training phase
+        model.train()
+        train_loss = 0
+        train_correct = 0
+        train_total = 0
         
-        # Train
-        train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
-        train_losses.append(train_loss)
-        train_accs.append(train_acc)
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs} [Train]")
         
-        # Validate
-        val_loss, val_acc, val_class_acc = evaluate(model, val_loader, criterion, device)
-        val_losses.append(val_loss)
-        val_accs.append(val_acc)
+        for images, labels in pbar:
+            images, labels = images.to(device), labels.to(device)
+            
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            
+            train_loss += loss.item()
+            _, predicted = outputs.max(1)
+            train_total += labels.size(0)
+            train_correct += predicted.eq(labels).sum().item()
+            
+            pbar.set_postfix({
+                'Loss': f'{train_loss/len(pbar):.4f}',
+                'Acc': f'{100.*train_correct/train_total:.2f}%'
+            })
         
-        print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
-        print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
-        print(f"Per-class Val Acc: {val_class_acc}")
+        train_acc = 100. * train_correct / train_total
+        
+        # Validation phase
+        model.eval()
+        val_loss = 0
+        val_correct = 0
+        val_total = 0
+        
+        with torch.no_grad():
+            pbar = tqdm(val_loader, desc=f"Epoch {epoch+1}/{epochs} [Val]")
+            
+            for images, labels in pbar:
+                images, labels = images.to(device), labels.to(device)
+                
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                
+                val_loss += loss.item()
+                _, predicted = outputs.max(1)
+                val_total += labels.size(0)
+                val_correct += predicted.eq(labels).sum().item()
+                
+                pbar.set_postfix({
+                    'Loss': f'{val_loss/len(pbar):.4f}',
+                    'Acc': f'{100.*val_correct/val_total:.2f}%'
+                })
+        
+        val_acc = 100. * val_correct / val_total
+        
+        # Update history
+        history['train_loss'].append(train_loss / len(train_loader))
+        history['val_loss'].append(val_loss / len(val_loader))
+        history['train_acc'].append(train_acc)
+        history['val_acc'].append(val_acc)
+        
+        # Print epoch summary
+        print(f"Epoch {epoch+1}/{epochs}:")
+        print(f"  Train Loss: {train_loss/len(train_loader):.4f}, Acc: {train_acc:.2f}%")
+        print(f"  Val Loss: {val_loss/len(val_loader):.4f}, Acc: {val_acc:.2f}%")
         
         # Save best model
-        if val_acc > best_acc:
-            best_acc = val_acc
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'val_acc': val_acc,
-                'class_names': classes
-            }, MODEL_SAVE_PATH)
-            print(f"✓ Saved best model (val_acc: {val_acc:.2f}%)")
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            torch.save(model.state_dict(), results_dir / "best_ripeness_classifier.pth")
+            print(f"  ✓ Best model saved! ({val_acc:.2f}% val acc)")
         
-        scheduler.step()
+        # Update scheduler
+        scheduler.step(val_loss)
     
-    # Test on test set
-    print("\n" + "="*60)
-    print("TESTING ON TEST SET")
-    print("="*60)
-    test_loss, test_acc, test_class_acc = evaluate(model, test_loader, criterion, device)
-    print(f"Test Loss: {test_loss:.4f}, Test Acc: {test_acc:.2f}%")
-    print(f"Per-class Test Acc: {test_class_acc}")
-    
-    # Save results
-    results = {
-        'best_val_acc': best_acc,
-        'test_acc': test_acc,
-        'test_class_acc': test_class_acc,
-        'class_names': classes,
-        'hyperparameters': {
-            'batch_size': BATCH_SIZE,
-            'epochs': EPOCHS,
-            'learning_rate': LEARNING_RATE,
-            'image_size': IMAGE_SIZE
-        }
-    }
-    
-    with open(f"{RESULTS_DIR}/results.json", 'w') as f:
-        json.dump(results, f, indent=2)
-    
-    print("\n" + "="*60)
+    print(f"\n{'='*60}")
     print("TRAINING COMPLETE!")
+    print(f"{'='*60}")
+    print(f"Best Validation Accuracy: {best_val_acc:.2f}%")
+    
+    # Save final model and history
+    torch.save(model.state_dict(), results_dir / "final_ripeness_classifier.pth")
+    
+    # Plot training curves
+    plt.figure(figsize=(12, 4))
+    
+    plt.subplot(1, 2, 1)
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['val_loss'], label='Val Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Training Loss')
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(history['train_acc'], label='Train Acc')
+    plt.plot(history['val_acc'], label='Val Acc')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy (%)')
+    plt.legend()
+    plt.title('Training Accuracy')
+    
+    plt.tight_layout()
+    plt.savefig(results_dir / "training_curves.png", dpi=150)
+    print(f"\n📊 Training curves saved to: {results_dir / 'training_curves.png'}")
+    
+    return model, history, best_val_acc
+
+def main():
+    """Main training function"""
+    data_dir = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/datasets/ripeness_classification_converted"
+    
+    if not Path(data_dir).exists():
+        print(f"❌ Dataset not found: {data_dir}")
+        print("Please run the conversion script first:")
+        print("python3 training/convert_ripeness_detection_to_classification.py")
+        return
+    
+    print("🍓 Training Strawberry Ripeness Classifier")
     print("="*60)
+    print(f"Dataset: {data_dir}")
+    
+    # Train the model
+    model, history, best_acc = train_model(data_dir, epochs=30, batch_size=32)
+    
+    print("\n✅ Training complete!")
     print(f"Best validation accuracy: {best_acc:.2f}%")
-    print(f"Test accuracy: {test_acc:.2f}%")
-    print(f"Model saved to: {MODEL_SAVE_PATH}")
-    print(f"Results saved to: {RESULTS_DIR}")
-    print("="*60)
+    
+    # Save training summary
+    summary_path = Path("/home/user/machine-learning/GitHubRepos/strawberryPicker/model/results/ripeness_classification/training_summary.md")
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(summary_path, 'w') as f:
+        f.write("# Ripeness Classifier Training Summary\n\n")
+        f.write(f"- **Best Validation Accuracy**: {best_acc:.2f}%\n")
+        f.write(f"- **Final Training Accuracy**: {history['train_acc'][-1]:.2f}%\n")
+        f.write(f"- **Final Validation Accuracy**: {history['val_acc'][-1]:.2f}%\n")
+        f.write(f"- **Training Images**: 1,436 (564 unripe + 872 ripe)\n")
+        f.write(f"- **Model**: MobileNetV2 (lightweight, fast)\n")
+        f.write(f"- **Training Time**: ~10-15 minutes on GPU\n\n")
+        f.write("## Class Distribution\n\n")
+        f.write("- **Unripe**: 564 training, 163 validation, 79 test\n")
+        f.write("- **Ripe**: 872 training, 259 validation, 148 test\n\n")
+        f.write("## Next Steps\n\n")
+        f.write("1. Test the classifier on sample images\n")
+        f.write("2. Integrate with the strawberry detector\n")
+        f.write("3. Test the two-stage pipeline\n")
+        f.write("4. Export to TFLite for Raspberry Pi\n")
+    
+    print(f"\n📄 Training summary saved to: {summary_path}")
 
 if __name__ == "__main__":
     main()
