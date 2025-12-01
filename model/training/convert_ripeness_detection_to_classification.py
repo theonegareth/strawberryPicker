@@ -21,18 +21,18 @@ def convert_detection_to_classification(data_path, output_path):
     data_path = Path(data_path)
     output_path = Path(output_path)
     
-    # Class mapping (from detection classes to classification classes)
-    # Detection dataset has: unripe, partially-ripe, ripe
-    # We'll map: unripe -> unripe, partially-ripe -> ripe, ripe -> ripe
+    # Class mapping - 4 classes (add overripe)
+    # Note: Overripe class will be empty initially - needs to be populated manually
     CLASS_MAPPING = {
-        0: "unripe",  # unripe
-        1: "ripe",    # partially-ripe -> ripe (good enough to pick)
-        2: "ripe"     # ripe -> ripe
+        0: "unripe",         # unripe
+        1: "partially-ripe", # partially-ripe
+        2: "ripe",           # ripe
+        3: "overripe"        # overripe (to be added later)
     }
     
-    # Create output directories
+    # Create output directories for 4 classes
     for split in ["train", "valid", "test"]:
-        for class_name in ["unripe", "ripe"]:
+        for class_name in ["unripe", "partially-ripe", "ripe", "overripe"]:
             (output_path / split / class_name).mkdir(parents=True, exist_ok=True)
     
     # Process each split
@@ -122,7 +122,7 @@ def convert_detection_to_classification(data_path, output_path):
     # Print summary
     for split in ["train", "valid", "test"]:
         print(f"\n{split.upper()}:")
-        for class_name in ["unripe", "ripe"]:
+        for class_name in ["unripe", "partially-ripe", "ripe"]:
             class_dir = output_path / split / class_name
             count = len(list(class_dir.glob("*.jpg")))
             print(f"  {class_name}: {count} images")
@@ -140,6 +140,6 @@ if __name__ == "__main__":
     print(f"\n✅ Dataset saved to: {output_path}")
     print("\nClass mapping applied:")
     print("  - Detection class 0 (unripe) -> Classification: unripe")
-    print("  - Detection class 1 (partially-ripe) -> Classification: ripe")
+    print("  - Detection class 1 (partially-ripe) -> Classification: partially-ripe")
     print("  - Detection class 2 (ripe) -> Classification: ripe")
-    print("\nNote: 'partially-ripe' strawberries are considered ripe enough to pick.")
+    print("\nAll 3 ripeness classes preserved for sophisticated picking strategy.")
