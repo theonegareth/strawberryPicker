@@ -113,7 +113,7 @@ class ModelValidator:
                     confidences = result.boxes.conf.cpu().numpy()
                     
                     for box, conf in zip(boxes, confidences):
-                        if conf < 0.3:  # Confidence threshold
+                        if conf < 0.15:  # Lower confidence threshold for more detections
                             continue
                         
                         x1, y1, x2, y2 = map(int, box)

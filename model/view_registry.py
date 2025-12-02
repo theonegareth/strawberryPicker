@@ -5,7 +5,11 @@ View Training Registry - Display all logged training runs
 
 import sys
 from pathlib import Path
-from .training_registry import get_registry
+
+# Add the model directory to Python path to enable imports
+sys.path.insert(0, str(Path(__file__).parent))
+
+from validation.training_registry import get_registry
 
 def main():
     """Main function to display training registry"""

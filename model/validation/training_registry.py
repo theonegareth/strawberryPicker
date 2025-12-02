@@ -77,6 +77,7 @@ class TrainingRun:
     ram_total_gb: float = 0.0
     python_version: str = ""
     tensorflow_version: str = ""
+    pytorch_version: str = ""
     cuda_version: str = ""
     os_info: str = ""
     

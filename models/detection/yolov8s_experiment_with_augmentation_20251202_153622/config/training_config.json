@@ -1,0 +1,13 @@
+{
+  "model_name": "yolov8s_experiment_with_augmentation_20251202_153622",
+  "architecture": "yolov8s",
+  "type": "detection",
+  "description": "experiment_with_augmentation",
+  "created": "2025-12-02T15:36:22.987560",
+  "training_params": {
+    "epochs": 100,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "image_size": 640
+  }
+}
