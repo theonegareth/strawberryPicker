@@ -52,7 +52,10 @@ ArduinoCode/
     ├── analysis.md                  # Kinematic analysis
     ├── implementation_plan.md       # Implementation strategy
     ├── implementation_summary.md    # Summary of approach
-    └── test_cases.md               # Test scenarios
+    ├── test_cases.md               # Test scenarios
+    ├── elbow_up_down.txt           # Elbow configuration notes
+    ├── generated_elbow_old_issue.txt # Historical issues
+    └── codingservoarm.ino          # Simple servo test code
 ```
 
 ## Quick Start
