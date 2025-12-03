@@ -39,10 +39,32 @@ model/exports/
 
 # Dataset (large files)
 model/dataset/
+model/datasets/
+model/dataset_*/
+model/ripeness_*/
+model/ripeness-classification-dataset/
+model/ripeness_classification_dataset/
+model/ripeness_manual_dataset/
+model/ripeness_detection_dataset/
+model/test/
+model/train/
+model/valid/
 *.zip
 *.tar.gz
 *.tar
 data/
+*.cache
+*.zip:Zone.Identifier
+
+# Generated datasets (can be regenerated)
+model/dataset/**/*.jpg
+model/dataset/**/*.jpeg
+model/dataset/**/*.png
+model/dataset/**/*.bmp
+model/dataset/**/*.zip
+model/dataset/**/labels.cache
+!model/dataset/**/data.yaml
+!model/dataset/**/*.txt
 
 # IDE
 .vscode/
@@ -101,6 +123,17 @@ model/dataset/**/*.png
 model/dataset/**/*.zip
 !model/dataset/**/data.yaml
 !model/dataset/**/*.txt
+
+# Keep training scripts but ignore generated files
+model/**/*.log
+model/**/*.csv
+model/**/*.json
+model/**/weights/
+model/**/results/
+model/**/exports/
+!model/training/**/*.py
+!model/deployment/**/*.py
+!model/validation/**/*.py
 
 # Training artifacts
 *.weights
