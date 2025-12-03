@@ -1,132 +1,133 @@
 #!/usr/bin/env python3
 """
-Prepare ripeness classification dataset from 3-class detection dataset
-Extracts strawberry crops and organizes by ripeness class
+Prepare strawberry ripeness classification dataset from Kaggle data
+Organizes images into train/valid/test splits for unripe, ripe, overripe classes
 """
 
-import cv2
-import numpy as np
-from pathlib import Path
+import os
 import shutil
-from tqdm import tqdm
+from pathlib import Path
+import random
+from typing import Dict, List
 
-def extract_strawberry_crops(dataset_path, output_path, img_size=128):
+def create_ripeness_dataset(
+    source_dir: str = "/home/user/Downloads/train",
+    output_dir: str = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/datasets/strawberry_ripeness_classification",
+    train_ratio: float = 0.7,
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+    max_per_class: int = 600  # Limit dataset size for faster training
+):
     """
-    Extract strawberry crops from detection dataset
-    Organize by ripeness: unripe, ripe, overripe
+    Create balanced ripeness classification dataset
+    
+    Args:
+        source_dir: Source directory with Kaggle fruit ripeness data
+        output_dir: Output directory for classification dataset
+        train_ratio: Training set ratio
+        val_ratio: Validation set ratio  
+        test_ratio: Test set ratio
+        max_per_class: Maximum images per class
     """
-    dataset_path = Path(dataset_path)
-    output_path = Path(output_path)
+    
+    print("🍓 Preparing Strawberry Ripeness Classification Dataset")
+    print("=" * 60)
+    
+    # Define class mapping (Kaggle → Our classes)
+    class_mapping = {
+        "UnripeStrawberry": "unripe",
+        "RipeStrawberry": "ripe", 
+        "RottenStrawberry": "overripe"
+    }
     
     # Create output directories
-    for split in ['train', 'valid', 'test']:
-        for ripeness in ['unripe', 'ripe', 'overripe']:
-            (output_path / split / ripeness).mkdir(parents=True, exist_ok=True)
+    output_path = Path(output_dir)
+    for split in ["train", "valid", "test"]:
+        for class_name in class_mapping.values():
+            (output_path / split / class_name).mkdir(parents=True, exist_ok=True)
     
-    # Class mapping (adjust based on your dataset)
-    # Common mapping: 0=unripe, 1=ripe, 2=overripe (but verify!)
-    class_names = ['unripe', 'ripe', 'overripe']
+    # Process each class
+    total_images = 0
+    class_counts = {}
     
-    print(f"Processing dataset from: {dataset_path}")
-    print(f"Output to: {output_path}")
-    print(f"Class names: {class_names}")
-    
-    total_crops = 0
-    
-    # Process each split
-    for split in ['train', 'valid', 'test']:
-        images_dir = dataset_path / split / 'images'
-        labels_dir = dataset_path / split / 'labels'
+    for kaggle_class, our_class in class_mapping.items():
+        print(f"\n📂 Processing {kaggle_class} → {our_class}")
         
-        if not images_dir.exists() or not labels_dir.exists():
-            print(f"Skipping {split}: directories not found")
+        # Get source images
+        source_path = Path(source_dir) / kaggle_class
+        if not source_path.exists():
+            print(f"❌ Source directory not found: {source_path}")
             continue
         
-        print(f"\nProcessing {split} split...")
+        # Get all image files
+        image_files = [f for f in source_path.iterdir() 
+                      if f.suffix.lower() in ['.jpg', '.jpeg', '.png']]
         
-        # Process each image
-        image_files = list(images_dir.glob("*.jpg"))
-        for img_file in tqdm(image_files, desc=f"Processing {split}"):
-            # Load image
-            img = cv2.imread(str(img_file))
-            if img is None:
-                continue
-            
-            img_h, img_w = img.shape[:2]
-            
-            # Load labels
-            label_file = labels_dir / f"{img_file.stem}.txt"
-            if not label_file.exists():
-                continue
-            
-            with open(label_file, 'r') as f:
-                lines = f.readlines()
-            
-            # Extract each strawberry
-            crop_idx = 0
-            for line in lines:
-                parts = line.strip().split()
-                if len(parts) < 5:
-                    continue
-                
-                class_id = int(parts[0])
-                if class_id >= len(class_names):
-                    continue
-                
-                # YOLO format: class x_center y_center width height (normalized)
-                x_center = float(parts[1]) * img_w
-                y_center = float(parts[2]) * img_h
-                width = float(parts[3]) * img_w
-                height = float(parts[4]) * img_h
-                
-                # Convert to pixel coordinates
-                x1 = int(x_center - width/2)
-                y1 = int(y_center - height/2)
-                x2 = int(x_center + width/2)
-                y2 = int(y_center + height/2)
-                
-                # Ensure coordinates are within bounds
-                x1 = max(0, x1)
-                y1 = max(0, y1)
-                x2 = min(img_w, x2)
-                y2 = min(img_h, y2)
-                
-                # Extract crop
-                crop = img[y1:y2, x1:x2]
-                if crop.size == 0:
-                    continue
-                
-                # Resize to standard size
-                crop_resized = cv2.resize(crop, (img_size, img_size))
-                
-                # Save crop
-                ripeness = class_names[class_id]
-                output_file = output_path / split / ripeness / f"{img_file.stem}_crop{crop_idx}.jpg"
-                cv2.imwrite(str(output_file), crop_resized)
-                
-                crop_idx += 1
-                total_crops += 1
+        # Limit dataset size
+        if len(image_files) > max_per_class:
+            image_files = random.sample(image_files, max_per_class)
+            print(f"   Limited to {max_per_class} images")
+        
+        print(f"   Found {len(image_files)} images")
+        
+        # Shuffle and split
+        random.shuffle(image_files)
+        n_train = int(len(image_files) * train_ratio)
+        n_val = int(len(image_files) * val_ratio)
+        
+        train_files = image_files[:n_train]
+        val_files = image_files[n_train:n_train + n_val]
+        test_files = image_files[n_train + n_val:]
+        
+        # Copy files to respective directories
+        splits = {
+            "train": train_files,
+            "valid": val_files,
+            "test": test_files
+        }
+        
+        split_counts = {}
+        for split_name, files in splits.items():
+            split_counts[split_name] = len(files)
+            for img_file in files:
+                dest = output_path / split_name / our_class / img_file.name
+                shutil.copy2(img_file, dest)
+                total_images += 1
+        
+        class_counts[our_class] = split_counts
+        print(f"   📊 Train: {split_counts['train']}, Val: {split_counts['valid']}, Test: {split_counts['test']}")
     
-    print(f"\n✓ Extracted {total_crops} strawberry crops")
-    print(f"✓ Dataset ready at: {output_path}")
+    # Print summary
+    print(f"\n{'='*60}")
+    print("📊 DATASET CREATION COMPLETE")
+    print(f"{'='*60}")
+    print(f"✅ Total images: {total_images}")
+    print(f"📁 Output directory: {output_path}")
+    print(f"\n📊 Class distribution:")
+    for class_name, splits in class_counts.items():
+        print(f"   {class_name}: {splits['train']}/{splits['valid']}/{splits['test']} (train/val/test)")
     
-    # Print class distribution
-    print("\nClass distribution:")
-    for split in ['train', 'valid', 'test']:
-        print(f"\n{split}:")
-        for ripeness in ['unripe', 'ripe', 'overripe']:
-            count = len(list((output_path / split / ripeness).glob("*.jpg")))
-            print(f"  {ripeness}: {count} images")
+    # Create dataset info file
+    info_file = output_path / "dataset_info.json"
+    dataset_info = {
+        "total_images": total_images,
+        "classes": list(class_mapping.values()),
+        "class_distribution": class_counts,
+        "splits": {
+            "train": train_ratio,
+            "valid": val_ratio,
+            "test": test_ratio
+        },
+        "max_per_class": max_per_class,
+        "source": str(source_dir)
+    }
+    
+    import json
+    with open(info_file, 'w') as f:
+        json.dump(dataset_info, f, indent=2)
+    
+    print(f"\n💾 Dataset info saved to: {info_file}")
+    print(f"\n✅ Dataset ready for training!")
 
 if __name__ == "__main__":
-    # Paths
-    dataset_path = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/dataset_3class_backup"
-    output_path = "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/ripeness_classification_dataset"
-    
-    # Extract crops
-    extract_strawberry_crops(dataset_path, output_path, img_size=128)
-    
-    print("\n" + "="*60)
-    print("NEXT STEP: Train ripeness classifier")
-    print("Run: python3 train_ripeness_classifier.py")
-    print("="*60)
+    create_ripeness_dataset()
