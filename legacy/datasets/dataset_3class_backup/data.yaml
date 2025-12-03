@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 3
+names: ['unripe', 'ripe', 'overripe']
+
+roboflow:
+  workspace: strawberry-detect
+  project: straw-detect-um7ho
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/strawberry-detect/straw-detect-um7ho/dataset/1
