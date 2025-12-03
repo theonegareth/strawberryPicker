@@ -1,0 +1,54 @@
+{
+  "model_name": "yolov8s_enhanced",
+  "model_path": "models/detection/yolov8s_enhanced/strawberry_yolov8s_enhanced.pt",
+  "validation_date": "2025-12-03T13:22:22.199230",
+  "test_images": [
+    {
+      "image_path": "/home/user/Downloads/train/RottenStrawberry/RottenStrawberry (25).jpg",
+      "image_name": "RottenStrawberry (25).jpg",
+      "detections": 1,
+      "average_confidence": 0.6456810235977173,
+      "confidences": [
+        0.6456810235977173
+      ]
+    },
+    {
+      "image_path": "/home/user/Downloads/train/RottenStrawberry/RottenStrawberry (84).jpg",
+      "image_name": "RottenStrawberry (84).jpg",
+      "detections": 2,
+      "average_confidence": 0.3142720013856888,
+      "confidences": [
+        0.3420124650001526,
+        0.286531537771225
+      ]
+    },
+    {
+      "image_path": "/home/user/Downloads/train/RottenStrawberry/RottenStrawberry (97).jpg",
+      "image_name": "RottenStrawberry (97).jpg",
+      "detections": 0,
+      "average_confidence": 0.0,
+      "confidences": []
+    },
+    {
+      "image_path": "/home/user/Downloads/train/RottenStrawberry/RottenStrawberry (116).jpg",
+      "image_name": "RottenStrawberry (116).jpg",
+      "detections": 0,
+      "average_confidence": 0.0,
+      "confidences": []
+    },
+    {
+      "image_path": "/home/user/Downloads/train/RottenStrawberry/RottenStrawberry (141).jpg",
+      "image_name": "RottenStrawberry (141).jpg",
+      "detections": 0,
+      "average_confidence": 0.0,
+      "confidences": []
+    }
+  ],
+  "summary": {
+    "total_images": 5,
+    "total_detections": 3,
+    "images_with_detections": 2,
+    "average_confidence": 0.42474167545636493,
+    "average_detections_per_image": 0.6
+  }
+}

@@ -1,265 +1,267 @@
 #!/usr/bin/env python3
 """
-Model Training and Organization Script
-Creates unique folders for each training run with proper versioning
+Training organization script for strawberry detection
+Creates organized model directories and manages training runs
 """
 
 import os
 import sys
-import shutil
 from pathlib import Path
+import json
+import shutil
 from datetime import datetime
 import argparse
-import json
 
-class ModelTrainingOrganizer:
-    def __init__(self, base_dir="models"):
-        """
-        Initialize the training organizer
-        
-        Args:
-            base_dir: Base directory for all models
-        """
-        self.base_dir = Path(base_dir)
-        self.base_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Create main category folders
-        (self.base_dir / "detection").mkdir(exist_ok=True)
-        (self.base_dir / "classification").mkdir(exist_ok=True)
-        
-    def generate_model_name(self, model_type, architecture, description=None):
-        """
-        Generate a unique model name with timestamp
-        
-        Args:
-            model_type: 'detection' or 'classification'
-            architecture: 'yolov8s', 'yolov8n', 'efficientnet', etc.
-            description: Optional description of the model/training
-            
-        Returns:
-            Unique model name string
-        """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
-        if description:
-            # Clean description for folder name (remove spaces, special chars)
-            clean_desc = "".join(c for c in description if c.isalnum() or c in ['_', '-'])
-            model_name = f"{architecture}_{clean_desc}_{timestamp}"
-        else:
-            model_name = f"{architecture}_{timestamp}"
-            
-        return model_name
+def create_model_structure(model_type, architecture, description, base_dir=None):
+    """
+    Create organized model directory structure
     
-    def create_model_structure(self, model_type, model_name):
-        """
-        Create the complete folder structure for a new model
-        
-        Args:
-            model_type: 'detection' or 'classification'
-            model_name: Name of the model
-            
-        Returns:
-            Path to the created model directory
-        """
-        model_dir = self.base_dir / model_type / model_name
-        model_dir.mkdir(parents=True, exist_ok=False)  # Fail if exists
-        
-        # Create subdirectories
-        (model_dir / "weights").mkdir()
-        (model_dir / "validation").mkdir()
-        (model_dir / "validation" / "detection_results").mkdir()
-        (model_dir / "validation" / "classification_results").mkdir()
-        (model_dir / "training_logs").mkdir()
-        (model_dir / "config").mkdir()
-        
-        # Create README file
-        readme_content = f"""# Model: {model_name}
+    Args:
+        model_type: 'detection' or 'classification'
+        architecture: 'yolov8n', 'yolov8s', etc.
+        description: Short description of the experiment
+        base_dir: Base directory for models (optional)
+    
+    Returns:
+        Path to created model directory
+    """
+    if base_dir is None:
+        base_dir = Path(__file__).parent.parent.parent / 'models' / model_type
+    
+    # Create timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # Create model name
+    model_name = f"{architecture}_{description}_{timestamp}"
+    model_dir = base_dir / model_name
+    
+    # Create directory structure
+    dirs = [
+        model_dir,
+        model_dir / 'weights',
+        model_dir / 'config',
+        model_dir / 'validation' / 'detection_results',
+        model_dir / 'validation' / 'metrics',
+        model_dir / 'validation' / 'visualizations'
+    ]
+    
+    for dir_path in dirs:
+        dir_path.mkdir(parents=True, exist_ok=True)
+    
+    print(f"✅ Created model structure: {model_dir.relative_to(Path(__file__).parent.parent.parent)}")
+    print(f"📁 Model name: {model_name}")
+    
+    return model_dir, model_name
 
-## Training Information
-- **Model Type:** {model_type}
-- **Created:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-- **Architecture:** {model_name.split('_')[0]}
+def copy_weights(weights_path, model_dir):
+    """Copy trained weights to organized structure"""
+    weights_path = Path(weights_path)
+    
+    if not weights_path.exists():
+        raise FileNotFoundError(f"Weights not found: {weights_path}")
+    
+    # Copy to both locations for consistency
+    best_path = model_dir / 'weights' / 'best.pt'
+    model_path = model_dir / 'weights' / 'model.pt'
+    
+    shutil.copy2(weights_path, best_path)
+    shutil.copy2(weights_path, model_path)
+    
+    print(f"✅ Copied weights to:")
+    print(f"   - {best_path.relative_to(Path(__file__).parent.parent.parent)}")
+    print(f"   - {model_path.relative_to(Path(__file__).parent.parent.parent)}")
 
-## Folder Structure
-- `weights/` - Model weights/checkpoints
+def create_training_config(model_dir, training_params):
+    """Create training configuration JSON"""
+    config = {
+        "model_name": model_dir.name,
+        "created_at": datetime.now().isoformat(),
+        "training_parameters": training_params,
+        "model_metadata": {
+            "architecture": training_params.get('architecture', 'unknown'),
+            "model_size": training_params.get('model_size', 'unknown'),
+            "dataset": training_params.get('dataset_name', 'unknown'),
+            "num_classes": training_params.get('num_classes', 0)
+        }
+    }
+    
+    config_path = model_dir / 'config' / 'training_config.json'
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=2)
+    
+    print(f"✅ Created training config: {config_path.relative_to(Path(__file__).parent.parent.parent)}")
+    return config_path
+
+def create_model_readme(model_dir, training_results):
+    """Create README for the model"""
+    readme_content = f"""# {model_dir.name}
+
+## Model Information
+- **Architecture**: {training_results.get('architecture', 'YOLOv8')}
+- **Model Size**: {training_results.get('model_size', 'n')}
+- **Dataset**: {training_results.get('dataset_name', 'Unknown')}
+- **Training Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+## Training Parameters
+- **Epochs**: {training_results.get('epochs', 'Unknown')}
+- **Batch Size**: {training_results.get('batch_size', 'Unknown')}
+- **Image Size**: {training_results.get('image_size', 'Unknown')}
+- **Learning Rate**: {training_results.get('learning_rate', 'Unknown')}
+- **Optimizer**: {training_results.get('optimizer', 'Unknown')}
+
+## Performance Metrics
+- **mAP@0.5**: {training_results.get('map50', 'Not evaluated')}
+- **mAP@0.5:0.95**: {training_results.get('map50_95', 'Not evaluated')}
+- **Precision**: {training_results.get('precision', 'Not evaluated')}
+- **Recall**: {training_results.get('recall', 'Not evaluated')}
+- **Training Time**: {training_results.get('training_time', 'Unknown')}
+
+## Files
+- `weights/best.pt` - Best model weights
+- `weights/model.pt` - Model weights (copy)
+- `config/training_config.json` - Training configuration
 - `validation/` - Validation results and metrics
-- `training_logs/` - Training logs and curves
-- `config/` - Training configuration files
 
 ## Usage
-To use this model, refer to the weights in the `weights/` directory.
+```python
+from ultralytics import YOLO
 
-## Validation
-Run validation using validate_models.py with this model's weights.
+# Load model
+model = YOLO('weights/best.pt')
+
+# Run inference
+results = model('path/to/image.jpg')
+```
+
+## Deployment
+For Raspberry Pi 4B deployment, export to TensorFlow Lite:
+```bash
+yolo export model=weights/best.pt format=tflite imgsz=416 int8=True
+```
 """
-        
-        with open(model_dir / "README.md", "w") as f:
-            f.write(readme_content)
-            
-        print(f"✅ Created model structure: {model_dir}")
-        return model_dir
     
-    def list_models(self, model_type=None):
-        """
-        List all available models
-        
-        Args:
-            model_type: Filter by 'detection' or 'classification'
-            
-        Returns:
-            List of model paths
-        """
-        models = []
-        
-        if model_type:
-            search_dirs = [self.base_dir / model_type]
-        else:
-            search_dirs = [self.base_dir / "detection", self.base_dir / "classification"]
-            
-        for search_dir in search_dirs:
-            if search_dir.exists():
-                for model_dir in search_dir.iterdir():
-                    if model_dir.is_dir() and not model_dir.name.startswith('.'):
-                        models.append(model_dir)
-                        
-        # Sort by creation time (newest first)
-        models.sort(key=lambda x: x.stat().st_mtime, reverse=True)
-        return models
+    readme_path = model_dir / 'README.md'
+    with open(readme_path, 'w') as f:
+        f.write(readme_content)
     
-    def get_latest_model(self, model_type, architecture=None):
-        """
-        Get the most recent model of a specific type
-        
-        Args:
-            model_type: 'detection' or 'classification'
-            architecture: Optional architecture filter (e.g., 'yolov8s')
-            
-        Returns:
-            Path to latest model directory or None
-        """
-        models = self.list_models(model_type)
-        
-        if architecture:
-            models = [m for m in models if architecture in m.name]
-            
-        return models[0] if models else None
+    print(f"✅ Created model README: {readme_path.relative_to(Path(__file__).parent.parent.parent)}")
+
+def list_models(model_type='detection', base_dir=None):
+    """List all existing models"""
+    if base_dir is None:
+        base_dir = Path(__file__).parent.parent.parent / 'models'
     
-    def copy_weights(self, source_path, model_dir, weight_name="model.pt"):
-        """
-        Copy model weights to the organized structure
-        
-        Args:
-            source_path: Path to the trained model weights
-            model_dir: Destination model directory
-            weight_name: Name for the weight file
-        """
-        source = Path(source_path)
-        if not source.exists():
-            raise FileNotFoundError(f"Source weights not found: {source_path}")
-            
-        dest = model_dir / "weights" / weight_name
-        shutil.copy2(source, dest)
-        print(f"✅ Copied weights to: {dest}")
-        
-        # Also copy as "best.pt" for YOLO compatibility
-        best_dest = model_dir / "weights" / "best.pt"
-        shutil.copy2(source, best_dest)
-        print(f"✅ Copied weights to: {best_dest}")
+    model_dir = base_dir / model_type
+    if not model_dir.exists():
+        print(f"No models found in {model_dir}")
+        return
     
-    def create_training_config(self, model_dir, config_dict):
-        """
-        Create a training configuration file
-        
-        Args:
-            model_dir: Model directory path
-            config_dict: Dictionary of configuration parameters
-        """
-        config_path = model_dir / "config" / "training_config.json"
-        with open(config_path, "w") as f:
-            json.dump(config_dict, f, indent=2)
-        print(f"✅ Created training config: {config_path}")
+    print(f"\n📋 Available {model_type} models:")
+    print("=" * 60)
+    
+    models = sorted(model_dir.iterdir(), key=os.path.getmtime, reverse=True)
+    
+    for i, model_path in enumerate(models, 1):
+        if model_path.is_dir():
+            # Get model info
+            config_path = model_path / 'config' / 'training_config.json'
+            if config_path.exists():
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+                desc = config.get('model_metadata', {}).get('architecture', 'unknown')
+            else:
+                desc = 'no config'
+            
+            print(f"{i}. {model_path.name}")
+            print(f"   📁 {model_path.relative_to(Path(__file__).parent.parent.parent)}")
+            print(f"   📝 {desc}")
+            
+            # Check for weights
+            best_path = model_path / 'weights' / 'best.pt'
+            if best_path.exists():
+                size_mb = best_path.stat().st_size / (1024 * 1024)
+                print(f"   ⚖️  {size_mb:.1f} MB")
+            else:
+                print(f"   ⚠️  No weights found")
+            print()
+
+def get_latest_model(model_type='detection', base_dir=None):
+    """Get the latest model directory"""
+    if base_dir is None:
+        base_dir = Path(__file__).parent.parent.parent / 'models'
+    
+    model_dir = base_dir / model_type
+    if not model_dir.exists():
+        return None
+    
+    models = sorted(model_dir.iterdir(), key=os.path.getmtime, reverse=True)
+    
+    for model_path in models:
+        if model_path.is_dir():
+            weights_path = model_path / 'weights' / 'best.pt'
+            if weights_path.exists():
+                return model_path, model_path.name
+    
+    return None
 
 def main():
-    parser = argparse.ArgumentParser(description='Organize model training runs')
-    parser.add_argument('--type', type=str,
-                       choices=['detection', 'classification'],
-                       help='Model type')
-    parser.add_argument('--architecture', type=str,
-                       help='Model architecture (e.g., yolov8s, efficientnet)')
-    parser.add_argument('--description', type=str,
-                       help='Optional description of the model/training')
-    parser.add_argument('--weights', type=str,
-                       help='Path to trained model weights to copy')
-    parser.add_argument('--list', action='store_true',
-                       help='List all existing models')
-    parser.add_argument('--latest', action='store_true',
-                       help='Show the latest model')
+    parser = argparse.ArgumentParser(description='Create organized model structure')
+    parser.add_argument('--type', type=str, choices=['detection', 'classification'], 
+                       default='detection', help='Model type')
+    parser.add_argument('--architecture', type=str, default='yolov8n',
+                       help='Model architecture (yolov8n, yolov8s, etc.)')
+    parser.add_argument('--description', type=str, required=True,
+                       help='Experiment description')
+    parser.add_argument('--weights', type=str, help='Path to trained weights')
+    parser.add_argument('--training-results', type=str, help='JSON string with training results')
+    parser.add_argument('--list', action='store_true', help='List all models')
+    parser.add_argument('--latest', action='store_true', help='Get latest model')
     
     args = parser.parse_args()
     
-    # Check if --list or --latest is used without required arguments
-    if not args.list and not args.latest:
-        if not args.type or not args.architecture:
-            parser.error("--type and --architecture are required when not using --list or --latest")
-    
-    organizer = ModelTrainingOrganizer()
-    
     if args.list:
-        print("\n📋 Available Models:")
-        print("=" * 60)
-        models = organizer.list_models()
-        for i, model in enumerate(models, 1):
-            model_type = "detection" if "detection" in str(model) else "classification"
-            created = datetime.fromtimestamp(model.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
-            print(f"{i}. [{model_type}] {model.name}")
-            print(f"   📁 {model}")
-            print(f"   🕒 {created}")
-            print()
-        return
+        list_models(args.type)
+        return 0
     
     if args.latest:
-        latest = organizer.get_latest_model(args.type, args.architecture)
-        if latest:
-            print(f"\n🎯 Latest {args.type} model:")
-            print(f"📁 {latest}")
-            print(f"🕒 {datetime.fromtimestamp(latest.stat().st_mtime)}")
+        result = get_latest_model(args.type)
+        if result:
+            model_path, model_name = result
+            print(f"Latest model: {model_name}")
+            print(f"Path: {model_path}")
         else:
-            print(f"No {args.type} models found")
-        return
+            print("No models found")
+        return 0
     
-    # Create new model structure
-    print(f"\n🚀 Creating new {args.type} model...")
-    model_name = organizer.generate_model_name(args.type, args.architecture, args.description)
-    print(f"📛 Model name: {model_name}")
-    
-    model_dir = organizer.create_model_structure(args.type, model_name)
-    
-    if args.weights:
-        print(f"\n💾 Copying weights from: {args.weights}")
-        organizer.copy_weights(args.weights, model_dir)
-    
-    # Create example config
-    example_config = {
-        "model_name": model_name,
-        "architecture": args.architecture,
-        "type": args.type,
-        "description": args.description or "",
-        "created": datetime.now().isoformat(),
-        "training_params": {
-            "epochs": 100,
-            "batch_size": 16,
-            "learning_rate": 0.001,
-            "image_size": 640
-        }
-    }
-    organizer.create_training_config(model_dir, example_config)
-    
-    print(f"\n✅ Model structure created successfully!")
-    print(f"📁 Location: {model_dir}")
-    print(f"\nNext steps:")
-    print(f"1. Copy your trained weights to: {model_dir}/weights/")
-    print(f"2. Run validation: python3 validate_models.py --detector {model_dir}/weights/best.pt")
-    print(f"3. Update {model_dir}/config/training_config.json with actual parameters")
+    # Create model structure
+    try:
+        model_dir, model_name = create_model_structure(
+            model_type=args.type,
+            architecture=args.architecture,
+            description=args.description
+        )
+        
+        # Copy weights if provided
+        if args.weights:
+            copy_weights(args.weights, model_dir)
+        
+        # Create training config if results provided
+        if args.training_results:
+            training_results = json.loads(args.training_results)
+            create_training_config(model_dir, training_results)
+            create_model_readme(model_dir, training_results)
+        
+        print(f"\n✅ Model structure created successfully!")
+        print(f"📁 Model directory: {model_dir}")
+        print(f"🏷️  Model name: {model_name}")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    sys.exit(main())

@@ -11,7 +11,8 @@ from pathlib import Path
 import torch
 import yaml
 import time
-from model.validation_logger import validation_logger, ValidationResult, create_validation_result_from_metrics
+import json
+from datetime import datetime
 
 def check_environment():
     """Detect running environment and configure paths accordingly"""
@@ -155,12 +156,7 @@ def train_model(data_yaml, weights_dir, results_dir, epochs=100, img_size=640, b
     
     # Log training run
     try:
-        sys.path.insert(0, str(Path(__file__).parent.parent))
-        from validation.training_registry import TrainingRun, TrainingRegistry
-        from datetime import datetime
         import psutil
-        
-        training_registry = TrainingRegistry("model/training_registry.json")
         
         # Extract metrics from results
         final_metrics = {}
@@ -171,60 +167,61 @@ def train_model(data_yaml, weights_dir, results_dir, epochs=100, img_size=640, b
         cpu_count = psutil.cpu_count()
         ram_total_gb = psutil.virtual_memory().total / (1024**3)
         
-        training_run = TrainingRun(
-            run_id=f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            experiment_name=f"YOLOv8_{train_args.get('name', 'strawberry_detection')}",
-            model_type='teacher',
-            model_architecture='YOLOv8',
-            model_size='n',
-            pretrained=True,
-            dataset_name='straw-detect.v1-straw-detect.yolov8',
-            dataset_size=392,  # This should be calculated from actual dataset
-            num_classes=1,
-            class_names=['strawberry'],
-            batch_size=batch_size,
-            image_size=img_size,
-            epochs_planned=epochs,
-            epochs_completed=epochs,  # This should be actual completed epochs
-            learning_rate=0.002,  # Default for YOLOv8
-            optimizer='AdamW',
-            weight_decay=0.0005,
-            train_accuracy=0.0,  # YOLO doesn't have traditional accuracy
-            val_accuracy=0.0,
-            test_accuracy=0.0,
-            train_loss=final_metrics.get('train/loss', 0.0),
-            val_loss=final_metrics.get('val/loss', 0.0),
-            test_loss=0.0,
-            precision=final_metrics.get('metrics/precision(B)', 0.0),
-            recall=final_metrics.get('metrics/recall(B)', 0.0),
-            f1_score=0.0,
-            macro_avg_precision=0.0,
-            macro_avg_recall=0.0,
-            macro_avg_f1=0.0,
-            weighted_avg_precision=0.0,
-            weighted_avg_recall=0.0,
-            weighted_avg_f1=0.0,
-            training_time_minutes=training_duration,
-            early_stopped=False,
-            best_epoch=epochs,  # This should be actual best epoch
-            gpu_name=env['gpu_name'],
-            gpu_memory_peak_gb=torch.cuda.max_memory_allocated() / (1024**3) if env['has_gpu'] else 0.0,
-            cpu_count=cpu_count,
-            ram_total_gb=ram_total_gb,
-            python_version=f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-            tensorflow_version='N/A',  # Not using TensorFlow
-            pytorch_version=torch.__version__,
-            cuda_version=torch.version.cuda if torch.version.cuda else 'N/A',
-            os_info=f"{sys.platform}",
-            model_path=str(final_model_path),
-            results_path=str(results_dir / 'strawberry_detection'),
-            config_path=str(results_dir / 'strawberry_detection' / 'args.yaml'),
-            status='completed'
-        )
+        # Create training log entry
+        training_log = {
+            "run_id": f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "experiment_name": f"YOLOv8_{train_args.get('name', 'strawberry_detection')}",
+            "model_type": "detection",
+            "model_architecture": "YOLOv8",
+            "model_size": "n",
+            "pretrained": True,
+            "dataset_name": "strawberry_kaggle_2500",
+            "dataset_size": 2500,  # Our Kaggle dataset size
+            "num_classes": 1,
+            "class_names": ["strawberry"],
+            "batch_size": batch_size,
+            "image_size": img_size,
+            "epochs_planned": epochs,
+            "epochs_completed": epochs,
+            "learning_rate": 0.002,
+            "optimizer": "AdamW",
+            "weight_decay": 0.0005,
+            "train_loss": final_metrics.get('train/loss', 0.0),
+            "val_loss": final_metrics.get('val/loss', 0.0),
+            "precision": final_metrics.get('metrics/precision(B)', 0.0),
+            "recall": final_metrics.get('metrics/recall(B)', 0.0),
+            "training_time_minutes": training_duration,
+            "early_stopped": False,
+            "best_epoch": epochs,
+            "gpu_name": env['gpu_name'],
+            "gpu_memory_peak_gb": torch.cuda.max_memory_allocated() / (1024**3) if env['has_gpu'] else 0.0,
+            "cpu_count": cpu_count,
+            "ram_total_gb": ram_total_gb,
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+            "pytorch_version": torch.__version__,
+            "cuda_version": torch.version.cuda if torch.version.cuda else 'N/A',
+            "os_info": f"{sys.platform}",
+            "model_path": str(final_model_path),
+            "results_path": str(results_dir / 'strawberry_detection'),
+            "config_path": str(results_dir / 'strawberry_detection' / 'args.yaml'),
+            "status": "completed"
+        }
         
-        training_registry.add_run(training_run)
-        print(f"✓ Training run logged: {training_run.run_id}")
+        # Save to training log
+        log_path = Path("model/training_log.json")
+        if log_path.exists():
+            with open(log_path, 'r') as f:
+                logs = json.load(f)
+        else:
+            logs = []
+        
+        logs.append(training_log)
+        
+        with open(log_path, 'w') as f:
+            json.dump(logs, f, indent=2)
+        
+        print(f"✓ Training run logged: {training_log['run_id']}")
         
     except Exception as e:
         print(f"Warning: Could not log training run: {e}")
