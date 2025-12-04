@@ -148,28 +148,28 @@ def main():
     models = [
         {
             'name': 'yolov8n_kaggle_2500images',
-            'path': 'models/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt',
-            'output_dir': 'models/detection/yolov8n_kaggle_2500images_trained_20251203_130255'
+            'path': 'model/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt',
+            'output_dir': 'model/detection/yolov8n_kaggle_2500images_trained_20251203_130255'
         },
         {
             'name': 'yolov8s_improved_detection_v2',
-            'path': 'models/detection/yolov8s_improved_detection_v2_20251202_153433/weights/best.pt',
-            'output_dir': 'models/detection/yolov8s_improved_detection_v2_20251202_153433'
+            'path': 'model/detection/yolov8s_improved_detection_v2_20251202_153433/weights/best.pt',
+            'output_dir': 'model/detection/yolov8s_improved_detection_v2_20251202_153433'
         },
         {
             'name': 'yolov8s_enhanced',
-            'path': 'models/detection/yolov8s_enhanced/strawberry_yolov8s_enhanced.pt',
-            'output_dir': 'models/detection/yolov8s_enhanced'
+            'path': 'model/detection/yolov8s_enhanced/strawberry_yolov8s_enhanced.pt',
+            'output_dir': 'model/detection/yolov8s_enhanced'
         },
         {
             'name': 'yolov8n_baseline',
-            'path': 'models/detection/yolov8n/strawberry_yolov8n.pt',
-            'output_dir': 'models/detection/yolov8n'
+            'path': 'model/detection/yolov8n/strawberry_yolov8n.pt',
+            'output_dir': 'model/detection/yolov8n'
         },
         {
             'name': 'baseline',
-            'path': 'models/detection/baseline/First_run_Baseline.pt',
-            'output_dir': 'models/detection/baseline'
+            'path': 'model/detection/baseline/First_run_Baseline.pt',
+            'output_dir': 'model/detection/baseline'
         }
     ]
     

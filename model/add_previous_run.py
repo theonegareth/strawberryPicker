@@ -161,7 +161,7 @@ def auto_detect_training_runs():
     Looks for model weights and attempts to extract information
     """
     base_path = Path(__file__).parent.parent
-    models_dir = base_path / "models"
+    models_dir = base_path / "model"
     
     if not models_dir.exists():
         print("❌ No models directory found")
@@ -186,8 +186,8 @@ def auto_detect_training_runs():
         model_type = None
         experiment_name = None
         
-        # Parse path structure: models/{type}/{name}/weights/best.pt
-        if 'models' in parts and len(parts) > parts.index('models') + 2:
+        # Parse path structure: model/{type}/{name}/weights/best.pt
+        if 'model' in parts and len(parts) > parts.index('model') + 2:
             model_type_idx = parts.index('models') + 1
             model_name_idx = parts.index('models') + 2
             
@@ -326,7 +326,7 @@ def main():
         print("  Auto-detect all runs: python add_previous_run.py --auto")
         print("  Add single run: python add_previous_run.py --model-path PATH --experiment-name NAME")
         print("\nExample:")
-        print("  python add_previous_run.py --model-path models/detection/yolov8s_enhanced/weights/best.pt --experiment-name 'YOLOv8s_Enhanced' --val-map50 0.937")
+        print("  python add_previous_run.py --model-path model/detection/yolov8s_enhanced/weights/best.pt --experiment-name 'YOLOv8s_Enhanced' --val-map50 0.937")
 
 if __name__ == '__main__':
     main()

@@ -42,8 +42,8 @@ def validate_kaggle_model(model_path=None, test_images=None, save_results=True):
     base_path = Path("/home/user/machine-learning/GitHubRepos/strawberryPicker")
     
     if model_path is None:
-        # Look for the latest kaggle model in models/detection/
-        detection_dir = base_path / "models" / "detection"
+        # Look for the latest kaggle model in model/detection/
+        detection_dir = base_path / "model" / "detection"
         kaggle_models = sorted(detection_dir.glob("kaggle_strawberry_yolov8n_*"))
         if kaggle_models:
             latest_model = kaggle_models[-1]

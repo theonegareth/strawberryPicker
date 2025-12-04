@@ -235,9 +235,9 @@ def main():
     """Main inference function"""
     
     parser = argparse.ArgumentParser(description='Detect and classify strawberry ripeness')
-    parser.add_argument('--detector', type=str, 
-                       default='models/detection/yolov8n_baseline/weights/best.pt',
-                       help='Path to YOLO detection model')
+    parser.add_argument('--detector', type=str,
+                        default='model/detection/yolov8n_baseline/weights/best.pt',
+                        help='Path to YOLO detection model')
     parser.add_argument('--classifier', type=str,
                        default='model/datasets/best_ripeness_classifier.pth',
                        help='Path to ripeness classifier')

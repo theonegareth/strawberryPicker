@@ -9,7 +9,7 @@ def validate_model():
     """Validate the trained model on sample images"""
     
     # Model path
-    model_path = Path("models/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt")
+    model_path = Path("model/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt")
     
     if not model_path.exists():
         print(f"❌ Model not found: {model_path}")

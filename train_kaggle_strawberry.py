@@ -36,8 +36,8 @@ def train_kaggle_strawberry(model_size='n', epochs=100, batch_size=16, image_siz
     base_path = Path("/home/user/machine-learning/GitHubRepos/strawberryPicker")
     data_yaml = base_path / "model" / "dataset_strawberry_kaggle" / "data.yaml"
     
-    # Save to models/detection/ folder structure
-    results_dir = base_path / "models" / "detection" / f"kaggle_strawberry_yolov8{model_size}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    # Save to model/detection/ folder structure
+    results_dir = base_path / "model" / "detection" / f"kaggle_strawberry_yolov8{model_size}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     weights_dir = results_dir / "weights"
     
     # Create results directory

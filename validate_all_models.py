@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validate all detection models in models/detection/ folder
+Validate all detection models in model/detection/ folder
 - Runs inference on test set for each model
 - Generates comparison report
 - Saves results in each model's validation folder
@@ -20,8 +20,8 @@ sys.path.insert(0, str(Path(__file__).parent / 'scripts'))
 
 def validate_all_models(test_images=None, save_results=True, max_models=None):
     """
-    Validate all models in models/detection/ folder
-    
+    Validate all models in model/detection/ folder
+
     Args:
         test_images: Path to test images directory
         save_results: Whether to save validation results
@@ -44,7 +44,7 @@ def validate_all_models(test_images=None, save_results=True, max_models=None):
     if test_images is None:
         test_images = base_path / "model" / "dataset_strawberry_kaggle" / "test" / "images"
     
-    detection_dir = base_path / "models" / "detection"
+    detection_dir = base_path / "model" / "detection"
     
     # Find all model directories with best.pt
     print(f"🔍 Scanning {detection_dir} for models...")
@@ -60,7 +60,7 @@ def validate_all_models(test_images=None, save_results=True, max_models=None):
                 })
     
     if not model_dirs:
-        print("❌ No models found in models/detection/")
+        print("❌ No models found in model/detection/")
         return None
     
     # Sort by modification time (newest first)
@@ -224,7 +224,7 @@ def validate_all_models(test_images=None, save_results=True, max_models=None):
         
         # Save comparison report
         if save_results:
-            report_path = base_path / "models" / "detection" / "validation_comparison_report.csv"
+            report_path = base_path / "model" / "detection" / "validation_comparison_report.csv"
             comparison_df.to_csv(report_path, index=False)
             print(f"\n💾 Comparison report saved to: {report_path}")
         

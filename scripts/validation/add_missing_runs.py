@@ -67,9 +67,9 @@ def add_missing_runs():
             "pytorch_version": "2.9.1+cu128",
             "cuda_version": "12.8",
             "os_info": "linux",
-            "model_path": "models/detection/yolov8s_improved_detection_v2_20251202_153433/weights/best.pt",
-            "results_path": "models/detection/yolov8s_improved_detection_v2_20251202_153433",
-            "config_path": "models/detection/yolov8s_improved_detection_v2_20251202_153433/config/training_config.json",
+            "model_path": "model/detection/yolov8s_improved_detection_v2_20251202_153433/weights/best.pt",
+            "results_path": "model/detection/yolov8s_improved_detection_v2_20251202_153433",
+            "config_path": "model/detection/yolov8s_improved_detection_v2_20251202_153433/config/training_config.json",
             "status": "completed"
         },
         {
@@ -119,9 +119,9 @@ def add_missing_runs():
             "pytorch_version": "2.9.1+cu128",
             "cuda_version": "12.8",
             "os_info": "linux",
-            "model_path": "models/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt",
-            "results_path": "models/detection/yolov8n_kaggle_2500images_trained_20251203_130255",
-            "config_path": "models/detection/yolov8n_kaggle_2500images_trained_20251203_130255/config/training_config.json",
+            "model_path": "model/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt",
+            "results_path": "model/detection/yolov8n_kaggle_2500images_trained_20251203_130255",
+            "config_path": "model/detection/yolov8n_kaggle_2500images_trained_20251203_130255/config/training_config.json",
             "status": "completed"
         }
     ]

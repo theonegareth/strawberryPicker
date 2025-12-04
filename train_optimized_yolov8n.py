@@ -36,8 +36,8 @@ def train_optimized_yolov8n(epochs=100, batch_size=32, image_size=640):
     base_path = Path("/home/user/machine-learning/GitHubRepos/strawberryPicker")
     data_yaml = base_path / "model" / "dataset_strawberry_kaggle" / "data.yaml"
 
-    # Save to models/detection/ folder structure
-    results_dir = base_path / "models" / "detection" / f"optimized_yolov8n_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    # Save to model/detection/ folder structure
+    results_dir = base_path / "model" / "detection" / f"optimized_yolov8n_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     weights_dir = results_dir / "weights"
 
     # Create results directory
