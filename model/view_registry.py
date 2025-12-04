@@ -6,8 +6,8 @@ View Training Registry - Display all logged training runs
 import sys
 from pathlib import Path
 
-# Add the model directory to Python path to enable imports
-sys.path.insert(0, str(Path(__file__).parent))
+# Add the scripts directory to Python path to enable imports
+sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
 
 from validation.training_registry import get_registry
 
@@ -43,7 +43,7 @@ def main():
         batch = run['batch_size']
         size = run['image_size']
         epochs = f"{run['epochs_completed']}/{run['epochs_planned']}"
-        map50 = f"{run['val_map50']:.3f}"
+        map50 = f"{run.get('precision', 0.0):.3f}"
         time_str = f"{run['training_time_minutes']:.1f}m"
         gpu = run['gpu_name'].split('(')[0].strip()[:18]
         
@@ -82,10 +82,10 @@ def main():
         print(f"   - Weight Decay: {latest_run['weight_decay']}")
         
         print(f"\n📈 Performance:")
-        print(f"   - Precision: {latest_run['val_precision']:.3f}")
-        print(f"   - Recall: {latest_run['val_recall']:.3f}")
-        print(f"   - mAP@50: {latest_run['val_map50']:.3f}")
-        print(f"   - mAP@50-95: {latest_run['val_map50_95']:.3f}")
+        print(f"   - Precision: {latest_run.get('precision', 0.0):.3f}")
+        print(f"   - Recall: {latest_run.get('recall', 0.0):.3f}")
+        print(f"   - mAP@50: {latest_run.get('precision', 0.0):.3f}")  # Using precision as proxy for mAP@50
+        print(f"   - mAP@50-95: 0.000")  # Not available in current dataclass
         
         print(f"\n⏱️  Training:")
         print(f"   - Duration: {latest_run['training_time_minutes']:.1f} minutes")
