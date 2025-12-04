@@ -51,9 +51,15 @@ def validate_kaggle_model(model_path=None, test_images=None, save_results=True):
         else:
             # Fallback to old location
             model_path = base_path / "model" / "results" / "kaggle_strawberry_yolov8n" / "weights" / "best.pt"
+    else:
+        # Convert string path to Path object
+        model_path = Path(model_path)
     
     if test_images is None:
         test_images = base_path / "model" / "dataset_strawberry_kaggle" / "test" / "images"
+    else:
+        # Convert string path to Path object
+        test_images = Path(test_images)
     
     # Save validation results inside the model's folder
     model_results_dir = model_path.parent.parent
