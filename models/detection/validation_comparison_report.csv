@@ -1,0 +1,4 @@
+Model,FPS,mAP@50,Precision,Recall,Avg Detections,Avg Confidence,Epochs
+kaggle_strawberry_yolov8n_20251204_115538,57.4,0.989,0.955,0.964,1.74,0.551,50
+yolov8n_kaggle_2500images_trained_20251203_130255,76.8,0.000,0.000,0.000,1.50,0.527,0
+yolov8s_improved_detection_v2_20251202_153433,59.5,0.000,0.000,0.000,1.84,0.392,0
