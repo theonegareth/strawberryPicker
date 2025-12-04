@@ -40,6 +40,13 @@ model/exports/
 # Dataset (large files)
 model/dataset/
 model/datasets/
+datasets/
+datasets/**/*.jpg
+datasets/**/*.jpeg
+datasets/**/*.png
+datasets/**/*.zip
+!datasets/**/*.yaml
+!datasets/**/*.txt
 model/dataset_*/
 model/ripeness_*/
 model/ripeness-classification-dataset/
