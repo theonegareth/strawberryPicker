@@ -321,3 +321,42 @@ robot/logs/
 robot/calibration/
 robot/trajectories/
 *.bag
+# Model checkpoints (intermediate epochs)
+model/detection/**/weights/epoch*.pt
+
+# Archive folder (keep local but don't commit)
+model/detection/archive/
+
+# Temporary files
+*.tmp
+*.cache
+*.pkl
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch
+*.pth
+*.onnx
+*.engine
+*.trt
+
+# Calibration data (large binary files)
+calibration_image_sample_data*.npy

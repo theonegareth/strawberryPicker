@@ -8,24 +8,25 @@ This directory contains trained YOLOv8 models for strawberry detection in roboti
 detection/
 ├── baseline/                                   # ✅ Initial baseline model (Active)
 ├── kaggle_strawberry_yolov8n_20251204_115538/ # ⭐ **RECOMMENDED: Best performing model** (Active)
-├── kaggle_strawberry_yolov8s_20251204_210526/ # ❌ Empty (Archived - No weights)
 ├── kaggle_strawberry_yolov8s_20251204_2105262/ # ✅ YOLOv8s trained model (Active)
 ├── optimized_yolov8n_20251204_154529/         # ✅ Optimized with enhanced augmentations (Active)
 ├── yolov8n/                                    # ✅ Standard YOLOv8n model (Active)
 ├── yolov8n_kaggle_2500images_trained_20251203_130255/ # ✅ Kaggle dataset model (Active)
-├── yolov8n_kaggle_dataset_2500images_20251203_125358/ # ❌ Empty (Archived - No weights)
 ├── yolov8s_enhanced/                          # ✅ Enhanced YOLOv8s model (Active)
-├── yolov8s_experiment_with_augmentation_20251202_153614/ # ❌ Empty (Archived - No weights)
-├── yolov8s_experiment_with_augmentation_20251202_153622/ # ❌ Empty (Archived - No weights)
 ├── yolov8s_improved_detection_v2_20251202_153433/ # ✅ Improved detection model (Active)
-├── yolov8s_quick_training_test_20251202_154202/ # ❌ Empty (Archived - No weights)
+├── archive/                                   # 📦 Archived experiments (moved from active)
+│   ├── kaggle_strawberry_yolov8s_20251204_210526/ # Empty (template)
+│   ├── yolov8n_kaggle_dataset_2500images_20251203_125358/ # Empty (template)
+│   ├── yolov8s_experiment_with_augmentation_20251202_153614/ # Empty (template)
+│   ├── yolov8s_experiment_with_augmentation_20251202_153622/ # Empty (template)
+│   └── yolov8s_quick_training_test_20251202_154202/ # Empty (template)
 └── validation_comparison_report.csv           # Model performance comparison
 ```
 
 ### 📊 Model Status Legend:
-- ✅ **Active**: Contains trained model weights
-- ❌ **Archived**: Empty directory (no weights - kept as template)
+- ✅ **Active**: Contains trained model weights (ready for use)
 - ⭐ **Recommended**: Best performing model for production
+- 📦 **Archive**: Moved to archive folder (empty templates for reference)
 
 ## 🏆 Recommended Model
 
