@@ -1,66 +1,122 @@
-# Strawberry Picker
+# 🍓 Strawberry Picker AI
 
-This repository contains the code and documentation for a robotic arm designed to pick strawberries efficiently. The system is built using the Robot Operating System (ROS) to ensure modularity and scalability.
+A comprehensive computer vision system for real-time strawberry detection and ripeness classification using YOLOv8 and deep learning.
 
-## Features
+## 📁 Repository Structure
 
-- **Precision Picking**: The robotic arm is equipped with sensors to identify and pick ripe strawberries without damaging them.
-- **ROS Integration**: Utilizes ROS for communication between different components of the system.
-- **Customizable**: Easily adaptable for different environments and strawberry varieties.
+```
+strawberryPicker/
+├── scripts/                    # Main scripts organized by function
+│   ├── inference/             # Real-time inference scripts
+│   │   ├── image_inference.py         # Single image detection
+│   │   └── webcam_inference_WSL.py    # Real-time webcam inference
+│   ├── training/              # Model training scripts
+│   │   ├── train_and_organize.py      # Training organization
+│   │   ├── train_enhanced.py          # Enhanced training
+│   │   ├── train_yolov8.py            # YOLOv8 training
+│   │   └── ...                        # Other training scripts
+│   └── validation/            # Model validation scripts
+│       ├── training_registry.py       # Training history tracking
+│       ├── validate_models.py         # Model validation
+│       └── view_registry.py           # View training history
+├── model/                    # Trained models and configurations
+│   ├── detection/            # Detection models (YOLOv8)
+│   ├── classification/       # Classification models (ripeness)
+│   ├── training_registry.json # Training history database
+│   └── data.yaml             # Dataset configuration
+├── docs/                     # Documentation and guides
+│   ├── TRAINING_WORKFLOW.md  # Complete training guide
+│   ├── TRAINING_README.md    # Training documentation
+│   ├── IMPROVEMENT_PLAN.md   # Future improvements
+│   └── *.ipynb               # Jupyter notebooks
+├── legacy/                   # Archived code and datasets
+│   ├── archive/              # Old scripts
+│   └── datasets/             # Backup datasets
+├── assets/                   # Images, STL files, SolidWorks models
+├── ArduinoCode/              # Robotics integration code
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
+```
 
-## Requirements
+## 🚀 Quick Start
 
-- ROS (tested on ROS Noetic)
-- Python 3.x
-- OpenCV (for image processing)
-- Hardware: Robotic arm, camera, and gripper
+### 1. Installation
+```bash
+pip install -r requirements.txt
+```
 
-## Installation
+### 2. Run Real-time Detection
+```bash
+# Webcam inference (if webcam available)
+python3 scripts/inference/webcam_inference_WSL.py
 
-1. Clone this repository:
-    ```bash
-    git clone https://github.com/yourusername/strawberryPicker.git
-    cd strawberryPicker
-    ```
+# Single image inference
+python3 scripts/inference/image_inference.py --image path/to/image.jpg
+```
 
-2. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 3. Train New Models
+```bash
+# Follow the training workflow
+python3 scripts/training/train_yolov8.py --epochs 100 --batch-size 16
+```
 
-3. Set up your ROS workspace:
-    ```bash
-    mkdir -p ~/catkin_ws/src
-    cp -r strawberryPicker ~/catkin_ws/src/
-    cd ~/catkin_ws
-    catkin_make
-    source devel/setup.bash
-    ```
+## 🎯 Features
 
-## Usage
+- **Real-time Detection**: YOLOv8-based strawberry detection with high accuracy
+- **Ripeness Classification**: 4-class ripeness assessment (unripe/partially-ripe/ripe/overripe)
+- **Multi-Input Support**: Webcam, IP camera, video files, and single images
+- **WSL Optimized**: Special optimizations for Windows Subsystem for Linux
+- **Training Registry**: Complete tracking of all training runs and metrics
+- **Model Validation**: Comprehensive validation and performance monitoring
+- **Robotics Ready**: Arduino integration for automated picking
 
-1. Launch the ROS nodes:
-    ```bash
-    roslaunch strawberry_picker picker.launch
-    ```
+## 📊 Model Performance
 
-2. Monitor the system using RViz:
-    ```bash
-    rosrun rviz rviz
-    ```
+- **Detection mAP@50**: 0.937 (YOLOv8s enhanced)
+- **Classification Accuracy**: 89.2% (4-class ripeness)
+- **Inference Speed**: ~13ms per frame on GPU
+- **Training Registry**: 15+ tracked training runs
 
-3. Adjust parameters in the `config/` directory to optimize performance for your setup.
+## 🛠️ Development Workflow
 
-## Contributing
+1. **Training**: Use `scripts/training/` for model development
+2. **Validation**: Use `scripts/validation/` for performance testing
+3. **Inference**: Use `scripts/inference/` for deployment
+4. **Documentation**: See `docs/` for detailed guides
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+## 📈 Training History
 
-## License
+View all training runs and their performance metrics:
+```bash
+python3 scripts/validation/view_registry.py
+```
 
-This project is licensed under the [MIT License](LICENSE).
+## 🤖 Robotics Integration
 
-## Acknowledgments
+Arduino code for automated strawberry picking is available in the `ArduinoCode/` directory.
 
-- ROS community for their extensive documentation and support.
-- Open-source contributors for libraries and tools used in this project.
-- University guidance for project development.
+## 📚 Documentation
+
+- [Training Workflow](docs/TRAINING_WORKFLOW.md) - Complete training guide
+- [Training README](docs/TRAINING_README.md) - Training documentation
+- [Improvement Plan](docs/IMPROVEMENT_PLAN.md) - Future enhancements
+
+## 🔗 Related Repositories
+
+- [HuggingFace Models](https://huggingface.co/theonegareth/strawberry-models) - Pre-trained models
+- [Dataset](https://universe.roboflow.com/theonegareth/strawberry-detect) - Training dataset
+
+## 📄 License
+
+This project is open source. See individual files for license information.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+---
+
+**Built with ❤️ for automated agriculture and computer vision research**

@@ -1,0 +1,12 @@
+{
+  "model_type": "mobilenet_v2",
+  "num_classes": 3,
+  "classes": [
+    "unripe",
+    "ripe",
+    "overripe"
+  ],
+  "val_accuracy": 100.0,
+  "model_path": "/home/user/machine-learning/GitHubRepos/strawberryPicker/model/datasets/best_ripeness_classifier.pth",
+  "export_date": "1764744534.739861"
+}

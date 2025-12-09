@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['partially-ripe', 'ripe', 'unripe']
+
+roboflow:
+  workspace: strawberry-ripeness-detection-p8bvl
+  project: strawberry-ripeness-detection-48rpf
+  version: 6
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/strawberry-ripeness-detection-p8bvl/strawberry-ripeness-detection-48rpf/dataset/6

@@ -1,0 +1,374 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+#define SERVOMIN  150
+#define SERVOMAX  600
+
+// Arm lengths in cm
+#define L1 20.0
+#define L2 14.5
+#define L3 8.0
+
+// Servos
+#define SERVO_BASE 0
+#define SERVO_SHOULDER 1
+#define SERVO_ELBOW 2
+#define SERVO_WRIST 3
+#define SERVO_SCISSOR 4
+
+float currentAngles[5] = {90, 95, 80, 90, 180};
+float targetAngles[5]  = {90, 95, 80, 90, 180};
+
+int angleToPulse(float angle) {
+  return map((int)angle, 0, 180, SERVOMIN, SERVOMAX);
+}
+
+// ======================================================
+// FORWARD KINEMATICS (UNMODIFIED — MATCHES YOUR MODEL)
+// ======================================================
+void computeForwardKinematics(float theta0, float theta1, float theta2,
+                              float &x, float &y, float &z)
+{
+//note pi/180 finds rad
+//     180/pi finds deg
+
+  float t0 = theta0 * PI / 180.0;
+  float t1 = theta1 * PI / 180.0;
+  float t2 = (theta2 - theta1) * PI / 180.0;
+
+  float y_arm = L1 * cos(t1) + L2 * cos(t2) + L3;
+  float z_arm = L1 * sin(t1) - L2 * sin(t2);
+
+  x = y_arm * cos(t0);
+  y = y_arm * sin(t0);
+  z = z_arm;
+}
+
+// ======================================================
+// CORRECTED INVERSE KINEMATICS (COMPATIBLE WITH FK RELATIVE ANGLE CONVENTION)
+// ======================================================
+bool computeInverseKinematicsCorrected(float x, float y, float z,
+                                      float &theta0, float &theta1, float &theta2, float &theta3,
+                                      bool elbow_down = true)
+{
+  // Base angle (unchanged)
+  theta0 = atan2(y, x) * 180.0 / PI;
+
+  // 2D arm analysis in YZ plane (ignoring rotation around base)
+  float arm_length = sqrt(x*x + y*y);
+  float z_length = z;
+
+  // Remove L3 to get the working point of L1+L2 arm
+  float L3_offset = arm_length - L3;
+  float Z = z_length;
+
+  // Check if target is reachable
+  float C = sqrt(L3_offset * L3_offset + Z*Z);
+  if (C > L1 + L2 || C < fabs(L1 - L2))
+    return false;
+
+  // Triangle geometry for L1, L2, C
+  float a = L1;
+  float b = L2;
+
+  // Get the triangle angle at L2 (elbow joint)
+  float cos_elbow = (a*a + b*b - C*C) / (2*a*b);
+  cos_elbow = constrain(cos_elbow, -1, 1);
+  float elbow_angle_triangle = acos(cos_elbow);  // This is the triangle angle
+
+  // Convert to joint angles using FK convention
+  // FK uses: theta2_rel = (theta2 - theta1)
+  // For elbow down: theta2_rel = 180° - elbow_angle_triangle
+  // For elbow up: theta2_rel = elbow_angle_triangle
+  
+  float theta2_rel;
+  if (elbow_down) {
+    theta2_rel = PI - elbow_angle_triangle;  // Elbow points down (your desired config)
+  } else {
+    theta2_rel = elbow_angle_triangle;       // Elbow points up
+  }
+  
+  // Convert to absolute joint angle to match FK convention
+  float t2_rad = theta2_rel;
+  float t2_deg = t2_rad * 180.0 / PI;
+
+  // Shoulder angle from triangle geometry
+  float cos_shoulder = (b*b + C*C - a*a) / (2*b*C);
+  cos_shoulder = constrain(cos_shoulder, -1, 1);
+  float shoulder_angle_triangle = acos(cos_shoulder);
+
+  // Additional angle from vertical reference
+  float shoulder_offset = atan2(Z, L3_offset);
+  
+  // Combine to get absolute shoulder angle (in degrees)
+  theta1 = (shoulder_angle_triangle + shoulder_offset) * 180.0 / PI;
+
+  // Finally compute absolute elbow angle using FK convention
+  // FK expects: theta2_rel = (theta2 - theta1)
+  // So: theta2 = theta1 + theta2_rel
+  theta2 = theta1 + t2_deg;
+
+  return true;
+}
+
+// ======================================================
+// INVERSE KINEMATICS (COMPATIBLE WITH EXISTING FK)
+// ======================================================
+bool computeInverseKinematics(float x, float y, float z,
+                              float &theta0, float &theta1, float &theta2, float &theta3)
+{
+  return computeInverseKinematicsCorrected(x, y, z, theta0, theta1, theta2, theta3, true);
+}
+// ======================================================
+// FK/IK VALIDATION FUNCTIONS
+// ======================================================
+void runValidationTests() {
+  Serial.println("=== FK/IK CONSISTENCY VALIDATION ===");
+  
+  // Test cases with elbow down configuration
+  struct TestCase {
+    float theta0, theta1, theta2;
+    const char* description;
+  };
+  
+  TestCase tests[] = {
+    {90, 90, 80, "Your working case"},
+    {90, 90, 100, "Your problematic case"},
+    {0, 45, 135, "Different configuration"},
+    {0, 120, 150, "Another test"},
+    {90, 60, 90, "Another test"}
+  };
+  
+  int numTests = sizeof(tests) / sizeof(tests[0]);
+  
+  for (int i = 0; i < numTests; i++) {
+    float t0 = tests[i].theta0;
+    float t1 = tests[i].theta1;
+    float t2 = tests[i].theta2;
+    
+    // Forward kinematics
+    float fkx, fky, fkz;
+    computeForwardKinematics(t0, t1, t2, fkx, fky, fkz);
+    
+    // Inverse kinematics with elbow down
+    float ik_t0, ik_t1, ik_t2, ik_t3;
+    computeInverseKinematicsCorrected(fkx, fky, fkz, ik_t0, ik_t1, ik_t2, ik_t3, true);
+    
+    // Validation FK of IK result
+    float val_fkx, val_fky, val_fkz;
+    computeForwardKinematics(ik_t0, ik_t1, ik_t2, val_fkx, val_fky, val_fkz);
+    
+    Serial.print("Test ");
+    Serial.print(i+1);
+    Serial.print(" (");
+    Serial.print(tests[i].description);
+    Serial.print("): FK(");
+    Serial.print(t0); Serial.print(",");
+    Serial.print(t1); Serial.print(",");
+    Serial.print(t2);
+    Serial.print(") -> (");
+    Serial.print(fkx, 2); Serial.print(",");
+    Serial.print(fky, 2); Serial.print(",");
+    Serial.print(fkz, 2);
+    Serial.print(") -> IK(");
+    Serial.print(ik_t0, 1); Serial.print(",");
+    Serial.print(ik_t1, 1); Serial.print(",");
+    Serial.print(ik_t2, 1);
+    Serial.print(") -> FK(");
+    Serial.print(val_fkx, 2); Serial.print(",");
+    Serial.print(val_fky, 2); Serial.print(",");
+    Serial.print(val_fkz, 2);
+    Serial.println(")");
+    
+    // Check if FK-IK-FK loop is consistent
+    float error = sqrt(pow(fkx - val_fkx, 2) + pow(fky - val_fky, 2) + pow(fkz - val_fkz, 2));
+    Serial.print("  Error: ");
+    Serial.print(error, 3);
+    Serial.print(" cm");
+    
+    if (error < 0.01) {
+      Serial.println(" [PASS]");
+    } else {
+      Serial.println(" [FAIL - TOO LARGE]");
+    }
+  }
+  
+  Serial.println("=====================================");
+  Serial.println("");
+}
+
+
+
+// ======================================================
+// Smooth move
+// ======================================================
+void moveToTargetAngles() {
+  float step = 0.125;
+  int delayTime = 0.25;
+
+  float maxChange = 0;
+  for (int i = 0; i < 5; i++) {
+    float change = abs(targetAngles[i] - currentAngles[i]);
+    if (change > maxChange) maxChange = change;
+  }
+
+  int steps = maxChange / step;
+  if (steps < 1) steps = 1;
+
+  for (int s = 0; s <= steps; s++) {
+    for (int i = 0; i < 5; i++) {
+      float pos = currentAngles[i] + (targetAngles[i] - currentAngles[i]) * s / steps;
+      pwm.setPWM(i, 0, angleToPulse(pos));
+    }
+    delay(delayTime);
+  }
+
+  for (int i = 0; i < 5; i++)
+    currentAngles[i] = targetAngles[i];
+}
+
+void moveScissorOnce(float angle) {
+  targetAngles[SERVO_SCISSOR] = angle;
+  moveToTargetAngles();
+}
+
+// ======================================================
+// SETUP
+// ======================================================
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Enter i x y z");
+  Serial.println("Enter f t0 t1 t2");
+
+  pwm.begin();
+  pwm.setPWMFreq(50);
+  delay(10);
+
+  for (int i = 0; i < 5; i++)
+    pwm.setPWM(i, 0, angleToPulse(currentAngles[i]));
+}
+
+// ======================================================
+// LOOP: USER COMMANDS + FK/IK + ANGLE DISPLAY
+// ======================================================
+void loop() {
+  if (!Serial.available()) return;
+
+  String input = Serial.readStringUntil('\n');
+  input.trim();
+
+  // Check command mode: IK or FK
+  if (input.startsWith("i")) {
+    input = input.substring(2);
+    input.trim();
+
+    int s1 = input.indexOf(' ');
+    int s2 = input.indexOf(' ', s1 + 1);
+    if (s1 < 0 || s2 < 0) {
+      Serial.println("Use: IK x y z");
+      return;
+    }
+
+    float x = input.substring(0, s1).toFloat();
+    float y = input.substring(s1 + 1, s2).toFloat();
+    float z = input.substring(s2 + 1).toFloat();
+
+    float t0, t1, t2, t3;
+    if (!computeInverseKinematics(x, y, z, t0, t1, t2, t3)) {
+      Serial.println("IK unreachable.");
+      return;
+    }
+
+    targetAngles[SERVO_BASE]     = t0;
+    targetAngles[SERVO_SHOULDER] = t1 + 5;
+    targetAngles[SERVO_ELBOW]    = (t2 - (t2 - 90) * 2) - 10;
+    targetAngles[SERVO_WRIST]    = t3;
+
+    moveToTargetAngles();
+
+    // FK check of the IK actual angles 
+    float base_math   = currentAngles[SERVO_BASE];
+    float shoulder_math =(currentAngles[SERVO_SHOULDER] - 5);
+    float elbow_math  = currentAngles[SERVO_ELBOW] + 10;
+    float fkx, fky, fkz;
+    computeForwardKinematics(base_math, shoulder_math, elbow_math, fkx, fky, fkz);
+
+    Serial.println("=== IK RESULTS ===");
+    Serial.print("IK Angles: ");
+    Serial.print(t0); Serial.print(" ");
+    Serial.print(t1); Serial.print(" ");
+    Serial.println(t2);
+
+    Serial.print("Actual Servo Angles: ");
+    Serial.print(currentAngles[0]); Serial.print(" ");
+    Serial.print(currentAngles[1]); Serial.print(" ");
+    Serial.println(currentAngles[2]);
+
+    Serial.print("FK of IK angles: ");
+    Serial.print(fkx); Serial.print(" ");
+    Serial.print(fky); Serial.print(" ");
+    Serial.println(fkz);
+
+    Serial.println("===================");
+    Serial.println(" ");
+  }
+
+  else if (input.startsWith("v")) {
+    runValidationTests();
+  }
+  
+  else if (input.startsWith("f")) {
+    input = input.substring(2);
+    input.trim();
+
+    int s1 = input.indexOf(' ');
+    int s2 = input.indexOf(' ', s1 + 1);
+    if (s1 < 0 || s2 < 0) {
+      Serial.println("Use: F t0 t1 t2");
+      return;
+    }
+
+    float t0 = input.substring(0, s1).toFloat();
+    float t1 = input.substring(s1 + 1, s2).toFloat();
+    float t2 = input.substring(s2 + 1).toFloat();
+
+    // Direct servo movement with offsets
+    targetAngles[SERVO_BASE]     = t0;
+    targetAngles[SERVO_SHOULDER] = t1 + 5;
+    targetAngles[SERVO_ELBOW]    = t2 - 10;
+    targetAngles[SERVO_WRIST]    = t2 - (80 - t2) * 2;
+
+    moveToTargetAngles();
+
+    float fx, fy, fz;
+    computeForwardKinematics(t0, t1, t2, fx, fy, fz);
+
+    Serial.println("=== FK INPUT ===");
+    Serial.print("FK Input Angles: ");
+    Serial.print(t0); Serial.print(" ");
+    Serial.print(t1); Serial.print(" ");
+    Serial.println(t2);
+
+    Serial.print("Actual Servo Angles: ");
+    Serial.print(currentAngles[0]); Serial.print(" ");
+    Serial.print(currentAngles[1]); Serial.print(" ");
+    Serial.println(currentAngles[2]);
+
+    Serial.print("FK Result XYZ: ");
+    Serial.print(fx); Serial.print(" ");
+    Serial.print(fy); Serial.print(" ");
+    Serial.println(fz);
+    Serial.println("=================");
+    Serial.println(" ");
+  }
+
+  else if (input.startsWith("h") || input.startsWith("?")) {
+    Serial.println("Commands:");
+    Serial.println("I x y z");
+    Serial.println("F t0 t1 t2");
+    Serial.println("V");
+  }
+}
