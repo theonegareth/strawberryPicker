@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['Flower', 'Green Strawberry', 'Red Strawberry', 'White Strawberry']
+
+roboflow:
+  workspace: strawberries
+  project: strawberry-detect
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/strawberries/strawberry-detect/dataset/3

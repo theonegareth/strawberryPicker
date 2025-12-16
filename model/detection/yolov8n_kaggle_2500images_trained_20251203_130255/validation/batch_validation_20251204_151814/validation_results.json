@@ -1,0 +1,16 @@
+{
+  "model_name": "yolov8n_kaggle_2500images_trained_20251203_130255",
+  "model_path": "/home/user/machine-learning/GitHubRepos/strawberryPicker/models/detection/yolov8n_kaggle_2500images_trained_20251203_130255/weights/best.pt",
+  "num_test_images": 250,
+  "inference_time_ms": {
+    "mean": 13.029293060302734,
+    "std": 11.270968302468635,
+    "min": 6.988286972045898,
+    "max": 145.27344703674316
+  },
+  "fps": 76.75013489770757,
+  "avg_detections_per_image": 1.496,
+  "avg_confidence": 0.5273225903511047,
+  "training_metrics": {},
+  "validation_date": "2025-12-04T15:18:14.043098"
+}

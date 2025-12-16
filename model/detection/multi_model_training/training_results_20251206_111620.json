@@ -1,0 +1,16 @@
+{
+  "yolov8s": {
+    "model_name": "yolov8s",
+    "error": "[Errno 2] No such file or directory: 'yolos.pt'",
+    "config": {
+      "model_size": "s",
+      "epochs": 100,
+      "batch_size": 32,
+      "imgsz": 640,
+      "lr0": 0.01,
+      "weight_decay": 0.0005,
+      "description": "Balanced speed/accuracy for general use"
+    },
+    "training_timestamp": "20251206_111615"
+  }
+}

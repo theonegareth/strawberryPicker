@@ -1,0 +1,240 @@
+{
+  "timestamp": "2025-12-15T19:11:48.162914",
+  "total_processed": 46,
+  "unripe": 3,
+  "ripe": 13,
+  "overripe": 30,
+  "unknown": 0,
+  "images": [
+    {
+      "filename": "4-9-19-Cluster26_jpg.rf.0f39d1fa78e674d5f0f107159f59197f_box0_conf0.79.jpg",
+      "label": "overripe",
+      "confidence": 0.36212158203125
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.ffb1399c50b6b0a068212e34d443db2e_box10_conf0.69.jpg",
+      "label": "overripe",
+      "confidence": 0.5419921875
+    },
+    {
+      "filename": "5-24-19-Cluster24_jpg.rf.6f850d27ca92af9259f7506847b5ac1d_box9_conf0.65.jpg",
+      "label": "ripe",
+      "confidence": 0.27392578125
+    },
+    {
+      "filename": "5-27-19-Cluster23_jpg.rf.69994e9c4d67370eebe6945b9cb26503_box10_conf0.53.jpg",
+      "label": "overripe",
+      "confidence": 0.29840087890625
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.ffb1399c50b6b0a068212e34d443db2e_box4_conf0.83.jpg",
+      "label": "ripe",
+      "confidence": 0.14898681640625
+    },
+    {
+      "filename": "5-21-19-Cluster26_jpg.rf.c90dc4b9a411900b5accd5bdcdee2593_box3_conf0.86.jpg",
+      "label": "unripe",
+      "confidence": 0.29180908203125
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.51eaaf09ab2211cbf504ec63ab8a87da_box19_conf0.31.jpg",
+      "label": "overripe",
+      "confidence": 0.3499755859375
+    },
+    {
+      "filename": "5-21-19-Cluster22_jpg.rf.840c6feea15cce8fe341c61c7ac89f2b_box0_conf0.78.jpg",
+      "label": "overripe",
+      "confidence": 0.24951171875
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.42234ae8fa4c995982e47d8a51137981_box24_conf0.54.jpg",
+      "label": "overripe",
+      "confidence": 0.4119873046875
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.51eaaf09ab2211cbf504ec63ab8a87da_box10_conf0.58.jpg",
+      "label": "ripe",
+      "confidence": 0.3433837890625
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.53c6afda7f3013ca1438e1773a0e1d51_box9_conf0.72.jpg",
+      "label": "overripe",
+      "confidence": 0.46014404296875
+    },
+    {
+      "filename": "5-24-19-Cluster24_jpg.rf.18fc4d620dee48e0c0f78e6b4d7571fb_box9_conf0.67.jpg",
+      "label": "ripe",
+      "confidence": 0.25030517578125
+    },
+    {
+      "filename": "5-27-19-Cluster23_jpg.rf.0ac01912baf32e0603eae29aa26416e4_box10_conf0.53.jpg",
+      "label": "overripe",
+      "confidence": 0.29840087890625
+    },
+    {
+      "filename": "5-21-19-Cluster22_jpg.rf.840c6feea15cce8fe341c61c7ac89f2b_box6_conf0.35.jpg",
+      "label": "overripe",
+      "confidence": 0.2525634765625
+    },
+    {
+      "filename": "5-24-19-Cluster26_jpg.rf.a53431db9e95fec59e04c65fdc5a8265_box2_conf0.84.jpg",
+      "label": "unripe",
+      "confidence": 0.2802734375
+    },
+    {
+      "filename": "4-9-19-Cluster22_jpg.rf.eeca967413625345ecab98dd53815609_box0_conf0.81.jpg",
+      "label": "ripe",
+      "confidence": 0.1949462890625
+    },
+    {
+      "filename": "2-26-19-Cluster26_jpg.rf.29524dffd6c8556e268dee8bc01e46d7_box1_conf0.86.jpg",
+      "label": "overripe",
+      "confidence": 0.23797607421875
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.6d814adbb1cca593b8b5707ea4f3d824_box10_conf0.64.jpg",
+      "label": "overripe",
+      "confidence": 0.4993896484375
+    },
+    {
+      "filename": "5-24-19-Cluster24_jpg.rf.6f850d27ca92af9259f7506847b5ac1d_box6_conf0.73.jpg",
+      "label": "ripe",
+      "confidence": 0.294189453125
+    },
+    {
+      "filename": "6-4-19-Cluster25_jpg.rf.98ef720528096ec4aa24d4dd30045332_box9_conf0.35.jpg",
+      "label": "overripe",
+      "confidence": 0.5948486328125
+    },
+    {
+      "filename": "2-26-19-Cluster26_jpg.rf.840826446160c4a7725b55dabdd40afb_box1_conf0.73.jpg",
+      "label": "overripe",
+      "confidence": 0.25823974609375
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.0e2394a25e88a5e9ce34d70a3bc22a5b_box3_conf0.88.jpg",
+      "label": "ripe",
+      "confidence": 0.26068115234375
+    },
+    {
+      "filename": "5-24-19-Cluster25_jpg.rf.f6ff614a1d3afa96de1ce9fd92b75429_box2_conf0.82.jpg",
+      "label": "overripe",
+      "confidence": 0.26007080078125
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.42234ae8fa4c995982e47d8a51137981_box37_conf0.30.jpg",
+      "label": "overripe",
+      "confidence": 0.20294189453125
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.42234ae8fa4c995982e47d8a51137981_box30_conf0.38.jpg",
+      "label": "overripe",
+      "confidence": 0.2896728515625
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.0e2394a25e88a5e9ce34d70a3bc22a5b_box12_conf0.54.jpg",
+      "label": "overripe",
+      "confidence": 0.29388427734375
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.a29609864f686510a5a1b6155d8d8e6d_box10_conf0.75.jpg",
+      "label": "overripe",
+      "confidence": 0.317138671875
+    },
+    {
+      "filename": "5-30-19-Cluster28_jpg.rf.25f4abca9c66b481683bbf9bbce3d573_box7_conf0.72.jpg",
+      "label": "ripe",
+      "confidence": 0.4012451171875
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.a29609864f686510a5a1b6155d8d8e6d_box25_conf0.53.jpg",
+      "label": "overripe",
+      "confidence": 0.32183837890625
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.ffb1399c50b6b0a068212e34d443db2e_box0_conf0.89.jpg",
+      "label": "ripe",
+      "confidence": 0.2120361328125
+    },
+    {
+      "filename": "4-9-19-Cluster22_jpg.rf.dd2c26f73d5470ec4126e33207c88644_box0_conf0.78.jpg",
+      "label": "ripe",
+      "confidence": 0.17108154296875
+    },
+    {
+      "filename": "6-4-19-Cluster25_jpg.rf.166207032ea11b2e3c7f6c30dcbea5a0_box9_conf0.36.jpg",
+      "label": "overripe",
+      "confidence": 0.5948486328125
+    },
+    {
+      "filename": "5-24-19-Cluster26_jpg.rf.6f858a34d8ce2e7a5407daf06519b699_box3_conf0.84.jpg",
+      "label": "unripe",
+      "confidence": 0.28057861328125
+    },
+    {
+      "filename": "5-30-19-Cluster28_jpg.rf.a7dec42e5529f73f2a831f5d38e00e49_box1_conf0.90.jpg",
+      "label": "ripe",
+      "confidence": 0.29327392578125
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.53c6afda7f3013ca1438e1773a0e1d51_box6_conf0.75.jpg",
+      "label": "ripe",
+      "confidence": 0.28948974609375
+    },
+    {
+      "filename": "4-9-19-Cluster26_jpg.rf.1400e580ead730b3062f1a1b33b086c0_box0_conf0.80.jpg",
+      "label": "overripe",
+      "confidence": 0.325927734375
+    },
+    {
+      "filename": "6-4-19-Cluster25_jpg.rf.bc3bc50259d65509c8672550edfa0dd8_box0_conf0.86.jpg",
+      "label": "overripe",
+      "confidence": 0.277099609375
+    },
+    {
+      "filename": "4-9-19-Cluster26_jpg.rf.db265771d9658cd714dea927c35eaaf3_box0_conf0.80.jpg",
+      "label": "overripe",
+      "confidence": 0.3482666015625
+    },
+    {
+      "filename": "6-4-19-Cluster25_jpg.rf.bc3bc50259d65509c8672550edfa0dd8_box9_conf0.38.jpg",
+      "label": "overripe",
+      "confidence": 0.5948486328125
+    },
+    {
+      "filename": "5-27-19-Cluster23_jpg.rf.f40e15138c7c2f61e89e922bf705bb87_box10_conf0.53.jpg",
+      "label": "overripe",
+      "confidence": 0.29840087890625
+    },
+    {
+      "filename": "5-21-19-Cluster22_jpg.rf.840c6feea15cce8fe341c61c7ac89f2b_box5_conf0.36.jpg",
+      "label": "overripe",
+      "confidence": 0.3782958984375
+    },
+    {
+      "filename": "6-4-19-Cluster23_jpg.rf.42234ae8fa4c995982e47d8a51137981_box17_conf0.73.jpg",
+      "label": "overripe",
+      "confidence": 0.21002197265625
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.0e2394a25e88a5e9ce34d70a3bc22a5b_box10_conf0.69.jpg",
+      "label": "overripe",
+      "confidence": 0.5419921875
+    },
+    {
+      "filename": "5-21-19-Cluster27_jpg.rf.585145f0077f710530db1b58ce2a692d_box10_conf0.69.jpg",
+      "label": "overripe",
+      "confidence": 0.5419921875
+    },
+    {
+      "filename": "5-21-19-Cluster28_jpg.rf.51eaaf09ab2211cbf504ec63ab8a87da_box5_conf0.75.jpg",
+      "label": "overripe",
+      "confidence": 0.47320556640625
+    },
+    {
+      "filename": "4-9-19-Cluster22_jpg.rf.8824e31ae05e416707e5b96e9a713406_box0_conf0.80.jpg",
+      "label": "ripe",
+      "confidence": 0.288330078125
+    }
+  ]
+}

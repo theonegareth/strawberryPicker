@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+- given-names: "Gareth"
+  family-names: "theonegareth"
+  email: "gareth@example.com"
+title: "Strawberry Picker AI System"
+version: "1.0.0"
+date-released: "2025-12-13"
+url: "https://huggingface.co/theonegareth/strawberryPicker"
+repository-code: "https://github.com/theonegareth/strawberryPicker"
+keywords:
+  - computer-vision
+  - object-detection
+  - image-classification
+  - agriculture
+  - robotics
+  - strawberry
+  - ripeness-detection
+  - yolov11
+  - efficientnet
+license: MIT
+abstract: >
+  A complete AI-powered strawberry picking system that combines object detection
+  and ripeness classification to identify and pick only ripe strawberries.
+  This two-stage pipeline achieves 91.71% accuracy in ripeness classification
+  while maintaining real-time performance suitable for robotic harvesting applications.
+
+references:
+  - type: software
+    title: "strawberry-models"
+    authors:
+      - given-names: "Gareth"
+        family-names: "theonegareth"
+    url: "https://huggingface.co/theonegareth/strawberry-models"
+    version: "1.0.0"
+    date-released: "2025-12-13"
+  
+  - type: dataset
+    title: "strawberry-detect"
+    authors:
+      - given-names: "Gareth"
+        family-names: "theonegareth"
+    url: "https://universe.roboflow.com/theonegareth/strawberry-detect"
+    version: "1.0.0"
+    date-released: "2025-12-13"
+
+preferred-citation:
+  type: software
+  title: "Strawberry Picker AI System: A Two-Stage Approach for Automated Harvesting"
+  authors:
+    - given-names: "Gareth"
+      family-names: "theonegareth"
+  version: "1.0.0"
+  url: "https://huggingface.co/theonegareth/strawberryPicker"
+  date-released: "2025-12-13"

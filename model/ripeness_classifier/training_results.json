@@ -1,0 +1,25 @@
+{
+  "model_architecture": "resnet18",
+  "num_classes": 3,
+  "class_names": [
+    "overripe",
+    "ripe",
+    "unripe"
+  ],
+  "best_val_accuracy": 93.99684044233807,
+  "training_config": {
+    "img_size": 224,
+    "batch_size": 16,
+    "epochs": 25,
+    "learning_rate": 0.001,
+    "val_split": 0.2
+  },
+  "dataset_info": {
+    "total_samples": 633,
+    "class_distribution": {
+      "overripe": 64,
+      "ripe": 342,
+      "unripe": 227
+    }
+  }
+}

@@ -1,0 +1,9 @@
+              precision    recall  f1-score   support
+
+    overripe       0.89      1.00      0.94        64
+        ripe       0.92      0.98      0.95       342
+      unripe       0.99      0.86      0.92       227
+
+    accuracy                           0.94       633
+   macro avg       0.93      0.95      0.94       633
+weighted avg       0.94      0.94      0.94       633

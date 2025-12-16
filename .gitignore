@@ -1,0 +1,235 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================
+# Virtual Environments
+# ============================================
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# IDE & Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================
+# Jupyter Notebook
+# ============================================
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# ============================================
+# Model Files & Training Artifacts
+# ============================================
+# PyTorch / TensorFlow / Keras
+*.pth
+*.pt
+*.pkl
+*.h5
+*.tflite
+*.onnx
+*.pb
+*.weights
+*.cfg
+*.data
+*.pth.tar
+
+# Model directories (auto-generated)
+model/weights/
+model/results/
+model/exports/
+runs/
+detect/
+predict/
+val/
+checkpoint/
+checkpoints/
+
+# ============================================
+# Dataset & Large Files
+# ============================================
+# Raw images (can be regenerated)
+model/dataset/**/*.jpg
+model/dataset/**/*.jpeg
+model/dataset/**/*.png
+model/dataset/**/*.zip
+!model/dataset/**/data.yaml
+!model/dataset/**/*.txt
+
+# Roboflow exports
+straw-detect.v1-straw-detect.yolov8/
+
+# ============================================
+# Logs & Caches
+# ============================================
+*.log
+logs/
+.cache/
+.parquet
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ============================================
+# Build & Distribution
+# ============================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pyproject.toml
+poetry.lock
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ============================================
+# Media & Output Files
+# ============================================
+*.avi
+*.mp4
+*.mov
+*.mkv
+*.gcode
+*.factory
+
+# ============================================
+# ML Experiment Tracking
+# ============================================
+mlruns/
+mlflow.db
+wandb/
+
+# ============================================
+# TensorBoard
+# ============================================
+runs/
+*.tfevents.*
+events.out.tfevents.*
+
+# ============================================
+# Calibration & Configuration
+# ============================================
+*.calib
+*.yaml
+*.yml
+!data.yaml
+!requirements.txt
+!setup.py
+!pyproject.toml
+
+# ============================================
+# Arduino Build Files
+# ============================================
+ArduinoCode/*.hex
+ArduinoCode/*.elf
+ArduinoCode/build/
+ArduinoCode/*.bin
+
+# ============================================
+# SolidWorks & CAD Temporary Files
+# ============================================
+assets/solidworks/*.tmp
+assets/solidworks/~$*
+assets/solidworks/*.bak
+assets/solidworks/*.swp
+
+# ============================================
+# Documentation Builds
+# ============================================
+docs/_build/
+site/
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.pptx
+
+# ============================================
+# Secrets & Local Configuration
+# ============================================
+config.local.yaml
+secrets.yaml
+credentials.json
+*.key
+*.pem
+
+# ============================================
+# Debug & Development
+# ============================================
+debug/
+debug_images/
+*.debug
+
+# ============================================
+# Robot Specific
+# ============================================
+robot/logs/
+robot/calibration/
+robot/trajectories/
+*.bag

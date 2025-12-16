@@ -1,0 +1,132 @@
+{
+  "validation_time": "2025-12-15T18:57:15.345484",
+  "model_path": "model/ripeness_classifier_best.pth",
+  "device": "cuda",
+  "total_images": 9,
+  "correct_predictions": 9,
+  "accuracy_percent": 100.0,
+  "class_stats": {
+    "unripe": {
+      "correct": 3,
+      "total": 3
+    },
+    "ripe": {
+      "correct": 3,
+      "total": 3
+    },
+    "overripe": {
+      "correct": 3,
+      "total": 3
+    }
+  },
+  "detailed_results": [
+    {
+      "image_path": "model/ripeness_manual_dataset/unripe/5-30-19-Cluster26_jpg.rf.76c43e1ffb299fa68d423999902aa12e_box0_conf0.88.jpg",
+      "true_label": "unripe",
+      "predicted_class": "unripe",
+      "confidence": 0.9522803425788879,
+      "probabilities": {
+        "overripe": 8.083912689471617e-06,
+        "ripe": 0.047711607068777084,
+        "unripe": 0.9522803425788879
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/unripe/5-27-19-Cluster23_jpg.rf.69994e9c4d67370eebe6945b9cb26503_box4_conf0.86.jpg",
+      "true_label": "unripe",
+      "predicted_class": "unripe",
+      "confidence": 0.9726852774620056,
+      "probabilities": {
+        "overripe": 4.455474936548853e-06,
+        "ripe": 0.02731032855808735,
+        "unripe": 0.9726852774620056
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/unripe/5-21-19-Cluster27_jpg.rf.0e2394a25e88a5e9ce34d70a3bc22a5b_box2_conf0.88.jpg",
+      "true_label": "unripe",
+      "predicted_class": "unripe",
+      "confidence": 0.980854868888855,
+      "probabilities": {
+        "overripe": 9.921053560901782e-07,
+        "ripe": 0.01914428174495697,
+        "unripe": 0.980854868888855
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/ripe/4-2-19-Cluster26_jpg.rf.fbd4855b5db86b42dd1db44ab3917fa8_box2_conf0.63.jpg",
+      "true_label": "ripe",
+      "predicted_class": "ripe",
+      "confidence": 0.5497572422027588,
+      "probabilities": {
+        "overripe": 6.742443656548858e-05,
+        "ripe": 0.5497572422027588,
+        "unripe": 0.45017531514167786
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/ripe/5-27-19-Cluster27_jpg.rf.93f4251380a18dea555834588dea5885_box3_conf0.88.jpg",
+      "true_label": "ripe",
+      "predicted_class": "ripe",
+      "confidence": 0.968855082988739,
+      "probabilities": {
+        "overripe": 0.022170238196849823,
+        "ripe": 0.968855082988739,
+        "unripe": 0.00897466205060482
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/ripe/5-27-19-Cluster26_jpg.rf.c5b77df87924cc6e4a9bb29624c95387_box7_conf0.54.jpg",
+      "true_label": "ripe",
+      "predicted_class": "ripe",
+      "confidence": 0.8942281007766724,
+      "probabilities": {
+        "overripe": 0.10435454547405243,
+        "ripe": 0.8942281007766724,
+        "unripe": 0.0014173592207953334
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/overripe/5-27-19-Cluster27_jpg.rf.93f4251380a18dea555834588dea5885_box4_conf0.85.jpg",
+      "true_label": "overripe",
+      "predicted_class": "overripe",
+      "confidence": 0.9303871989250183,
+      "probabilities": {
+        "overripe": 0.9303871989250183,
+        "ripe": 0.06393787264823914,
+        "unripe": 0.0056750159710645676
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/overripe/5-21-19-Cluster22_jpg.rf.a7ee70d9973edb526773be8cec932d21_box3_conf0.71.jpg",
+      "true_label": "overripe",
+      "predicted_class": "overripe",
+      "confidence": 0.9977317452430725,
+      "probabilities": {
+        "overripe": 0.9977317452430725,
+        "ripe": 0.0022461030166596174,
+        "unripe": 2.215227323176805e-05
+      },
+      "correct": true
+    },
+    {
+      "image_path": "model/ripeness_manual_dataset/overripe/5-27-19-Cluster23_jpg.rf.f40e15138c7c2f61e89e922bf705bb87_box11_conf0.41.jpg",
+      "true_label": "overripe",
+      "predicted_class": "overripe",
+      "confidence": 0.986182689666748,
+      "probabilities": {
+        "overripe": 0.986182689666748,
+        "ripe": 0.01373255718499422,
+        "unripe": 8.47552073537372e-05
+      },
+      "correct": true
+    }
+  ]
+}
