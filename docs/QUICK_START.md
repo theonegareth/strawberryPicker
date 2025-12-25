@@ -80,6 +80,7 @@ cv2.destroyAllWindows()
 
 ## Step 5: Arduino Integration (8 minutes)
 
+### Basic Arduino Integration
 ```python
 # Connect Arduino and test communication
 from src.arduino_bridge import ArduinoBridge
@@ -90,6 +91,34 @@ arduino.test_connection()
 # Move to position (if Arduino is connected)
 arduino.move_to_position(x=10.0, y=5.0, z=15.0)
 ```
+
+### Enhanced Strawberry Locator Integration (NEW!)
+```python
+# Use enhanced locator for better depth detection
+from strawberrylocator import StrawberryLocator
+from ultralytics import YOLO
+
+# Initialize enhanced locator
+locator = StrawberryLocator()
+model = YOLO('huggingface_models/strawberry-yolov8s-detector/best.pt')
+
+# Capture stereo frames (you'll need to implement frame capture)
+left_frame = cv2.imread('left_image.jpg')
+right_frame = cv2.imread('right_image.jpg')
+
+# Process with enhanced depth detection
+results = locator.process_frame_pair(left_frame, right_frame, model)
+
+# Send high-confidence results to Arduino
+for result in results:
+    if result['confidence'] > 0.7:
+        x, y, z = result['position_3d']  # 3D coordinates in cm
+        print(f"Moving to: X={x:.1f}, Y={y:.1f}, Z={z:.1f}cm")
+        print(f"Confidence: {result['confidence']:.2f}")
+        print(f"Method used: {result['method']}")
+        
+        # Send to Arduino (replace with your function)
+        # send_to_arduino(x, y, z)
 
 ## Next Steps
 - Read the full [Technical Documentation](TECHNICAL_DOCUMENTATION.md)

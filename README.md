@@ -96,6 +96,12 @@ strawberryPicker/
 │   ├── dataset_mixed_conservative/  # Production-ready dataset
 │   ├── datasets/strawberry_ripeness_to_label/  # Manual labels
 │   └── detection/homemade_yolov8n_100epochs_expanded2/  # Best model
+├── deployment/                  # Enhanced strawberry locator system
+│   ├── strawberrylocator.py     # Enhanced locator with 4-12x depth points
+│   ├── test_enhanced_locator.py # Performance comparison tests
+│   ├── locator_config.yaml      # Configuration system
+│   ├── main.cpp                 # Arduino PID control system
+│   └── README_ENHANCED_LOCATOR.md # Enhanced locator documentation
 ├── ArduinoCode/                 # Arduino robotic arm control
 ├── assets/                      # Images, CAD models, and resources
 ├── huggingface_models/          # Hugging Face model repository
@@ -152,6 +158,31 @@ python scripts/test_confidence_threshold.py --confidence 0.7
 2. Upload to your Arduino board
 3. Connect servos according to the pin definitions
 4. Use serial commands: `I x y z` for inverse kinematics or `F t0 t1 t2` for forward kinematics
+
+### **🎯 Enhanced Strawberry Locator (NEW!)**
+
+For improved depth detection and reliability, use the enhanced strawberry locator:
+
+```bash
+# Test enhanced locator
+cd deployment
+python strawberrylocator.py
+
+# Run comparison tests
+python test_enhanced_locator.py
+
+# Use in your pipeline
+from strawberrylocator import StrawberryLocator
+locator = StrawberryLocator()
+results = locator.process_frame_pair(left_frame, right_frame, model)
+```
+
+**Key improvements:**
+- **4-12x more depth data** from bounding box analysis
+- **Robust statistics** with outlier removal
+- **Confidence scoring** for reliability assessment
+- **Multiple fallback methods** for production reliability
+- **Professional logging** and error handling
 
 ## 🎯 Dataset Creation Workflow
 
@@ -243,9 +274,18 @@ Edit `src/config.py` to customize:
 
 ## 📚 Documentation
 
+### Core Documentation
 - **[Model Performance Summary](model/HOMEMADE_MODEL_SUMMARY.md)** - Detailed training results
-- **[Deployment Guide](DEPLOYMENT_SUMMARY.md)** - Production deployment instructions
+- **[Deployment Guide](docs/DEPLOYMENT_SUMMARY.md)** - Production deployment instructions
 - **[Dataset Organization](docs/model_organization_summary.md)** - Dataset structure and usage
+
+### Enhanced Strawberry Locator (NEW!)
+- **[API Reference](docs/API_REFERENCE_ENHANCED_LOCATOR.md)** - Complete StrawberryLocator class documentation
+- **[Configuration Guide](docs/CONFIGURATION_GUIDE.md)** - Comprehensive YAML configuration options
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
+- **[Performance Comparison](docs/PERFORMANCE_COMPARISON.md)** - Quantified improvements over finaltest.py
+- **[Migration Guide](docs/MIGRATION_GUIDE.md)** - Step-by-step migration from finaltest.py
+- **[Arduino PID Guide](docs/ARDUINO_PID_GUIDE.md)** - Professional motion control with PID
 
 ## 🙏 Acknowledgments
 
