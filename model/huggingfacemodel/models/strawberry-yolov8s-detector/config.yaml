@@ -1,0 +1,179 @@
+# Strawberry Picker Configuration
+# Centralized configuration for all paths and settings
+
+# ============================================
+# Dataset Paths
+# ============================================
+dataset:
+  # Primary dataset for detection (YOLO format)
+  detection:
+    path: "model/dataset_strawberry_detect_v3"
+    data_yaml: "model/dataset_strawberry_detect_v3/data.yaml"
+    train: "train/images"
+    val: "valid/images"
+    test: "test/images"
+    nc: 1
+    names: ["strawberry"]
+
+  # Ripeness classification dataset (binary/3-class)
+  ripeness:
+    path: "model/ripeness_manual_dataset"
+    train: "train"
+    val: "val"
+    test: "test"
+    classes: ["unripe", "partially_ripe", "fully_ripe"]
+
+# ============================================
+# Model Paths
+# ============================================
+models:
+  # Detection models
+  detection:
+    weights_dir: "model/weights"
+    results_dir: "model/results"
+    exports_dir: "model/exports"
+    
+    # Pretrained model files
+    yolov8n: "yolov8n.pt"
+    yolov8s: "yolov8s.pt"
+    yolov8m: "yolov8m.pt"
+    
+    # Custom trained models
+    strawberry_yolov8n: "model/weights/strawberry_yolov8n.pt"
+    strawberry_yolov8s: "model/weights/strawberry_yolov8s.pt"
+    
+    # Export formats
+    onnx: "model/exports/strawberry_yolov8n.onnx"
+    tflite: "model/exports/strawberry_yolov8n.tflite"
+    tflite_int8: "model/exports/strawberry_yolov8n_int8.tflite"
+
+  # Ripeness classification models
+  ripeness:
+    keras_model: "model/weights/ripeness_classifier.h5"
+    tflite_model: "model/exports/ripeness_classifier.tflite"
+
+# ============================================
+# Training Configuration
+# ============================================
+training:
+  # Default training parameters
+  epochs: 100
+  batch_size: 16
+  img_size: 640
+  patience: 20
+  save_period: 10
+  
+  # Environment detection
+  use_gpu: true
+  device: "auto"  # "cpu", "cuda", or "auto"
+  
+  # Augmentation settings
+  augment: true
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4
+  degrees: 0.0
+  translate: 0.1
+  scale: 0.5
+  shear: 0.0
+  perspective: 0.0
+  flipud: 0.0
+  fliplr: 0.5
+  mosaic: 1.0
+  mixup: 0.0
+
+# ============================================
+# Inference Configuration
+# ============================================
+inference:
+  # Real-time detection
+  camera_index: 0
+  confidence_threshold: 0.5
+  iou_threshold: 0.45
+  
+  # Image preprocessing
+  input_size: 224  # For classification models
+  normalize: true
+  
+  # Output settings
+  show_fps: true
+  save_predictions: false
+  output_dir: "predictions"
+
+# ============================================
+# Robotic Arm Configuration
+# ============================================
+robot:
+  # Serial communication
+  serial_port: "/dev/ttyACM0"
+  baud_rate: 115200
+  
+  # Coordinate transformation (pixel to robot space)
+  calibration:
+    camera_matrix: "calibration/camera_matrix.npy"
+    dist_coeffs: "calibration/dist_coeffs.npy"
+    transformation_matrix: "calibration/transformation_matrix.npy"
+  
+  # Arm parameters (mm)
+  workspace:
+    x_min: 0
+    x_max: 300
+    y_min: 0
+    y_max: 200
+    z_min: 0
+    z_max: 150
+  
+  # Servo angles (degrees)
+  servo:
+    base_min: 0
+    base_max: 180
+    shoulder_min: 30
+    shoulder_max: 150
+    elbow_min: 20
+    elbow_max: 160
+    gripper_open: 90
+    gripper_close: 180
+
+# ============================================
+# Logging Configuration
+# ============================================
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/strawberry_picker.log"
+  max_size_mb: 10
+  backup_count: 5
+  
+  # TensorBoard
+  tensorboard_dir: "runs"
+  log_images: true
+  log_frequency: 10  # batches
+
+# ============================================
+# Performance Optimization
+# ============================================
+performance:
+  # Raspberry Pi optimization
+  use_tensorrt: false
+  use_coral_tpu: false
+  threads: 4
+  use_neon: true
+  
+  # Model quantization
+  quantization:
+    enabled: true
+    method: "int8"  # int8, float16, dynamic_range
+    calibration_samples: 100
+  
+  # Caching
+  cache_dataset: true
+  cache_dir: ".cache"
+
+# ============================================
+# Development & Debugging
+# ============================================
+debug:
+  enable_debug_output: false
+  save_debug_images: false
+  debug_dir: "debug"
+  log_predictions: true
+  visualize_detections: true
