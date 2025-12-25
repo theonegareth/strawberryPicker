@@ -1,0 +1,51 @@
+# Enhanced Strawberry Locator Configuration
+# Optimized for 23cm baseline stereo setup
+
+strawberry_locator:
+  # Camera Configuration
+  cameras:
+    baseline_cm: 23.0          # Your current baseline distance
+    left_camera_id: 1          # Left camera ID
+    right_camera_id: 2         # Right camera ID
+    resolution: [640, 408]     # Frame resolution
+    
+  # Depth Detection Configuration
+  depth_detection:
+    min_confidence_threshold: 0.6    # Minimum confidence to accept depth
+    enable_bbox_corners: true        # Enable 4-corner triangulation
+    enable_bbox_perimeter: true      # Enable perimeter sampling
+    num_perimeter_points: 8          # Number of perimeter points (8 recommended)
+    enable_fallback_strategies: true # Enable automatic fallback methods
+    
+  # Processing Configuration
+  processing:
+    max_strawberries_per_frame: 5    # Maximum strawberries to process per frame
+    enable_error_recovery: true      # Enable automatic error recovery
+    max_retries: 3                   # Maximum retry attempts
+    
+  # Logging Configuration
+  logging:
+    level: INFO                      # Logging level (DEBUG, INFO, WARNING, ERROR)
+    file: strawberry_locator.log     # Log file name
+    
+  # Performance Configuration
+  performance:
+    enable_threading: false          # Enable multi-threading (set to true for real-time)
+    enable_caching: true             # Enable result caching
+    processing_fps: 30               # Target processing FPS
+    
+  # Robustness Configuration
+  robustness:
+    enable_calibration_monitoring: true   # Monitor calibration quality
+    enable_quality_filtering: true        # Filter low-quality detections
+    enable_outlier_removal: true          # Remove depth outliers
+    outlier_threshold: 2.0               # MAD threshold for outlier removal (standard deviations)
+    
+  # Visualization Configuration
+  visualization:
+    enable_depth_overlay: true       # Show depth information on visualization
+    enable_confidence_overlay: true  # Show confidence scores
+    enable_method_overlay: true      # Show calculation method used
+    box_color: [0, 255, 0]          # Bounding box color (BGR)
+    center_color: [0, 0, 255]       # Center point color (BGR)
+    text_color: [255, 255, 0]       # Text color (BGR)
