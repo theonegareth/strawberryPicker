@@ -28,7 +28,7 @@ A five-servo robotic arm that finds ripe strawberries with a YOLOv8n detector, l
 
 Strawberries are still mostly picked by hand. The work is slow, and the fruit bruises if it is squeezed too hard. This project is a robotic arm that does the whole job in one system: it finds a ripe strawberry, moves to it, cuts the stem with a scissor end effector, and catches the fruit for a basket.
 
-Two webcams act as a stereo pair. A laptop runs the vision: a YOLOv8n model boxes the ripe strawberries in each frame, and the two views give the fruit's position in centimetres. The laptop sends that target over USB serial to an Arduino Uno, which drives the five servos through a PCA9685 servo driver. An early draft of the design had a Raspberry Pi computing the coordinates; the final design does that work on the laptop.
+Two webcams act as a stereo pair. A laptop runs the vision: a YOLOv8n model boxes the ripe strawberries in each frame, and the two views give the fruit's position in centimetres. The laptop sends that target over USB serial to an Arduino Uno, which drives the five servos through a PCA9685 servo driver. The vision side is plain Python scripts; the link to the arm is that serial line. An early draft of the design had a Raspberry Pi computing the coordinates; the final design does that work on the laptop.
 
 The arm was built by Group 2 (Kelompok 2) for the Robotics Kinematics and Dynamics course at BINUS ASO School of Engineering, from September 2025 to January 2026. A write-up with photos is on the [project page][project-page].
 
@@ -230,7 +230,7 @@ strawberryPicker/
 
 | Branch | Contents |
 |---|---|
-| [`commit_fixes`][branch-commit-fixes] | Latest full tree (2025-12-25): forward and inverse kinematics firmware, camera calibration, the stereo-to-serial scripts, datasets, training runs with weights, and documentation |
+| [`commit_fixes`][branch-commit-fixes] | Latest full tree (2025-12-25): forward and inverse kinematics firmware, camera calibration, the stereo-to-serial scripts, datasets, training runs with weights, a ROS 2 package (`ros2/strawberry_picker_control`), and documentation |
 | [`backup`][branch-backup] | Tree from 2025-12-16, including the first inverse kinematics firmware |
 | [`clean-branch`][branch-clean] | Restored tree from 2025-12-16 |
 | [`clean-new-branch`][branch-clean-new] | Same commit as `main` |
@@ -282,15 +282,15 @@ Some figures in the older branches' documents, such as their READMEs, came befor
 5. Put a YOLO-format dataset at `model/dataset/straw-detect.v1-straw-detect.yolov8/`, with a `data.yaml` like this:
 
    ```yml
-   train: ../train/images
-   val: ../valid/images
-   test: ../test/images
+   train: train/images
+   val: valid/images
+   test: test/images
 
    nc: 1
    names: ['strawberry']
    ```
 
-   `train_yolov8.py --dataset` takes another location.
+   The paths are relative to the dataset directory, which holds `train/`, `valid/` and `test/`, each with `images/` and `labels/`. `train_yolov8.py --dataset` takes another location.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
